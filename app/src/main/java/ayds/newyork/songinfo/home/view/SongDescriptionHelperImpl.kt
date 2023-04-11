@@ -1,5 +1,7 @@
 package ayds.newyork.songinfo.home.view
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import ayds.newyork.songinfo.home.model.entities.Song.EmptySong
 import ayds.newyork.songinfo.home.model.entities.Song
 import ayds.newyork.songinfo.home.model.entities.Song.SpotifySong
@@ -9,6 +11,7 @@ interface SongDescriptionHelper {
 }
 
 internal class SongDescriptionHelperImpl (private val formatDate: FormatterDate) : SongDescriptionHelper {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getSongDescriptionText(song: Song): String {
         return when (song) {
             is SpotifySong ->
@@ -22,7 +25,4 @@ internal class SongDescriptionHelperImpl (private val formatDate: FormatterDate)
             else -> "Song not found"
         }
     }
-
-
-
 }
