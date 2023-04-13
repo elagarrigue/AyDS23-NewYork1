@@ -1,12 +1,9 @@
 package ayds.newyork.songinfo.home.view
 
 import java.text.SimpleDateFormat
+import java.util.*
 
-
-@Suppress("DEPRECATION")
 class FormatterDate {
-
-
     fun viewRelease (releaseDate: String, precision: String): String {
         return when (precision) {
             "day" -> dayString(releaseDate)
@@ -15,43 +12,28 @@ class FormatterDate {
             else -> ""
         }
     }
-
-        private fun dayString (date: String) : String {
-        // val day = LocalDate.parse(date)
-        println(date)
-        val fecha = SimpleDateFormat("yyyy-MM-dd")
-            val print = fecha.parse(date)
-        println(print.date.toString() + "/" + print.month.inc().toString() + "/" + print.year.plus(1900).toString())
-
-
-        return  print.date.toString() + "/" + print.month.inc().toString() + "/" + print.year.plus(1900).toString()
+    private fun dayString (date: String) : String {
+        val dayFormat = SimpleDateFormat("yyyy-MM-dd")
+        val dateWithoutFormat = dayFormat.parse(date)
+        return  dateWithoutFormat.date.toString() + "/" +
+                dateWithoutFormat.month.inc().toString() + "/" +
+                dateWithoutFormat.year.plus(1900).toString()
     }
-
     private fun monthString (date: String) : String {
-        println(date)
-        var formatMes = SimpleDateFormat("MM")
-        val fecha = formatMes.parse(date)
-        formatMes = SimpleDateFormat("MMMM")
-        println(buildString {
-        append("fecha: ")
-        append(fecha)
-        })
-        val month = formatMes.format(fecha)
-        val formatAnio = SimpleDateFormat("yyyy")
-        val fecha2 = formatAnio.parse(date)
-        println(buildString {
-            append("fecha2: ")
-            append(fecha2)
-        })
-        val year = formatAnio.format(fecha2)
-        println("$month, $year")
-
-        return "$month, $year"
+        var monthFormat = SimpleDateFormat("yyyy-MM")
+        var dateWithoutFormat = monthFormat.parse(date)
+        monthFormat = SimpleDateFormat("MMMM", Locale.ENGLISH)
+        val monthName = monthFormat.format(dateWithoutFormat)
+        val yearFormat = SimpleDateFormat("yyyy", Locale.ENGLISH)
+        dateWithoutFormat = yearFormat.parse(date)
+        val year = yearFormat.format(dateWithoutFormat)
+        return "$monthName, $year"
     }
-
     private fun yearString (date: String) : String {
-        //val year = Year.parse(date)
-        return "" //year.toString() + " ( " + isLeapYear(date) + " )"
+        val yearFormat = SimpleDateFormat("yyyy")
+        val dateWithoutFormat = yearFormat.parse(date)
+        val year = yearFormat.format(dateWithoutFormat)
+        return "$year ( ${isLeapYear(date)} )"
     }
     private fun isLeapYear (year: String) : String {
         val yearInt = year.toInt()
