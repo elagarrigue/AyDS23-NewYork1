@@ -42,7 +42,6 @@ internal class DayFormatStrategy : PrecisionFormatStrategy  {
             else "Not a leap year"
         }
     }
-
 internal class NoStrategy : PrecisionFormatStrategy {
     override fun format(date: String) : String {
        return ""
