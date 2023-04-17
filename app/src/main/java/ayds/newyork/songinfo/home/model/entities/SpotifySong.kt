@@ -1,7 +1,6 @@
 package ayds.newyork.songinfo.home.model.entities
 
 sealed class Song {
-
     data class SpotifySong(
         val id: String,
         val songName: String,
@@ -12,10 +11,6 @@ sealed class Song {
         val imageUrl: String,
         var releaseDatePrecision: String,
         var isLocallyStored: Boolean = false
-
-    ) : Song() {
-
-    }
-
+    ) : Song()
     object EmptySong : Song()
 }

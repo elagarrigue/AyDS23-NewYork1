@@ -8,8 +8,7 @@ interface SongDescriptionHelper {
     fun getSongDescriptionText(song: Song = EmptySong): String
 }
 internal class SongDescriptionHelperImpl (private val formatDate: FormatterDate) : SongDescriptionHelper {
-     lateinit var strategy : PrecisionFormatStrategy
-    override fun getSongDescriptionText(song: Song): String {
+     override fun getSongDescriptionText(song: Song): String {
         return when (song) {
             is SpotifySong -> {
                 "${
@@ -32,7 +31,7 @@ internal class SongDescriptionHelperImpl (private val formatDate: FormatterDate)
             "day" -> DayFormatStrategy()
             "month" -> MonthFormatStrategy()
             "year" -> YearFormatStrategy()
-            else -> NoStrategy()
+            else -> DefaultStrategy()
         }
     }
 }

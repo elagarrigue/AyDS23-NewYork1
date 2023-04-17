@@ -26,7 +26,6 @@ import ayds.observer.Subject
 interface HomeView {
     val uiEventObservable: Observable<HomeUiEvent>
     val uiState: HomeUiState
-
     fun navigateToOtherDetails(artistName: String)
     fun openExternalLink(url: String)
 }
@@ -54,27 +53,22 @@ class HomeViewActivity : AppCompatActivity(), HomeView {
         intent.putExtra(OtherInfoWindow.ARTIST_NAME_EXTRA, artistName)
         startActivity(intent)
     }
-
     override fun openExternalLink(url: String) {
         navigationUtils.openExternalUrl(this, url)
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         initModule()
         initProperties()
         initListeners()
         initObservers()
         updateSongImage()
     }
-
     private fun initModule() {
         HomeViewInjector.init(this)
         homeModel = HomeModelInjector.getHomeModel()
     }
-
     private fun initProperties() {
         searchButton = findViewById(R.id.searchButton)
         modeDetailsButton = findViewById(R.id.modeDetailsButton)
@@ -83,7 +77,6 @@ class HomeViewActivity : AppCompatActivity(), HomeView {
         descriptionTextView = findViewById(R.id.descriptionTextView)
         posterImageView = findViewById(R.id.posterImageView)
     }
-
     private fun initListeners() {
         searchButton.setOnClickListener {
             hideKeyboard(termEditText)
@@ -92,59 +85,48 @@ class HomeViewActivity : AppCompatActivity(), HomeView {
         modeDetailsButton.setOnClickListener { notifyMoreDetailsAction() }
         openSongButton.setOnClickListener { notifyOpenSongAction() }
     }
-
     private fun searchAction() {
         updateSearchTermState()
         updateDisabledActionsState()
         updateMoreDetailsState()
         notifySearchAction()
     }
-
     private fun notifySearchAction() {
         onActionSubject.notify(HomeUiEvent.Search)
     }
-
     private fun notifyMoreDetailsAction() {
         onActionSubject.notify(HomeUiEvent.MoreDetails)
     }
-
     private fun notifyOpenSongAction() {
         onActionSubject.notify(HomeUiEvent.OpenSongUrl)
     }
-
     private fun hideKeyboard(view: View) {
         (this@HomeViewActivity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager).apply {
             hideSoftInputFromWindow(view.windowToken, 0)
         }
     }
-
     private fun updateSearchTermState() {
         uiState = uiState.copy(searchTerm = termEditText.text.toString())
     }
-
     private fun updateDisabledActionsState() {
         uiState = uiState.copy(actionsEnabled = false)
     }
-
     private fun initObservers() {
         homeModel.songObservable
             .subscribe { value -> updateSongInfo(value) }
     }
-
     private fun updateSongInfo(song: Song) {
         updateUiState(song)
         updateSongDescription()
         updateSongImage()
         updateMoreDetailsState()
     }
-
     private fun updateUiState(song: Song) {
         when (song) {
             is SpotifySong -> updateSongUiState(song)
             EmptySong -> updateNoResultsUiState()
         }
     }
-
     private fun updateSongUiState(song: SpotifySong) {
         uiState = uiState.copy(
             songId = song.id,
@@ -154,7 +136,6 @@ class HomeViewActivity : AppCompatActivity(), HomeView {
             actionsEnabled = true
         )
     }
-
     private fun updateNoResultsUiState() {
         uiState = uiState.copy(
             songId = "",
@@ -164,23 +145,19 @@ class HomeViewActivity : AppCompatActivity(), HomeView {
             actionsEnabled = false
         )
     }
-
     private fun updateSongDescription() {
         runOnUiThread {
             descriptionTextView.text = uiState.songDescription
         }
     }
-
     private fun updateSongImage() {
         runOnUiThread {
             imageLoader.loadImageIntoView(uiState.songImageUrl, posterImageView)
         }
     }
-
     private fun updateMoreDetailsState() {
         enableActions(uiState.actionsEnabled)
     }
-
     private fun enableActions(enable: Boolean) {
         runOnUiThread {
             modeDetailsButton.isEnabled = enable
