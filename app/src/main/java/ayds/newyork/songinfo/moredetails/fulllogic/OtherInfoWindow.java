@@ -13,11 +13,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import ayds.newyork.songinfo.R;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class OtherInfoWindow extends AppCompatActivity {
 
@@ -25,6 +30,15 @@ public class OtherInfoWindow extends AppCompatActivity {
   private TextView textPane2;
   private DataBase dataBase = null;
   private final String imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVioI832nuYIXqzySD8cOXRZEcdlAj3KfxA62UEC4FhrHVe0f7oZXp3_mSFG7nIcUKhg&usqp=CAU";
+
+  private void open(String artist) {
+    dataBase = new DataBase(this);
+    DataBase.saveArtist(dataBase, "test", "sarasa");
+    Log.e("TAG", "" + DataBase.getInfo(dataBase, "test"));
+    Log.e("TAG", "" + DataBase.getInfo(dataBase, "nada"));
+    getArtistInfo(artist);
+  }
+
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -33,8 +47,16 @@ public class OtherInfoWindow extends AppCompatActivity {
     open(getIntent().getStringExtra("artistName"));
   }
 
+  public static NYTimesAPI createNYTimesAPI() {
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl("https://api.nytimes.com/svc/search/v2/")
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .build();
+    return retrofit.create(NYTimesAPI.class);
+  }
+
   public void getArtistInfo(String artistName) {
-    NYTimesAPI NYTimesAPI = NYTimesAPIImpl.createNYTimesAPI();
+    NYTimesAPI NYTimesAPI = createNYTimesAPI();
     Log.e("TAG","artistName " + artistName);
         new Thread(() -> {
           String text = DataBase.getInfo(dataBase, artistName);
@@ -44,24 +66,19 @@ public class OtherInfoWindow extends AppCompatActivity {
             try {
               Response<String> callResponse = NYTimesAPI.getArtistInfo(artistName).execute();
               Log.e("TAG","JSON " + callResponse.body());
-              GSonImpl gSon = new GSonImpl(callResponse);
-              if (gSon.getDocsElement() == null) {
+              Gson gson = new Gson();
+              JsonObject jObj = gson.fromJson(callResponse.body(), JsonObject.class);
+              JsonObject responseObj = jObj.get("response").getAsJsonObject();
+              JsonElement docsElement = responseObj.get("docs").getAsJsonArray().get(0).getAsJsonObject().get("abstract");
+              JsonElement url = responseObj.get("docs").getAsJsonArray().get(0).getAsJsonObject().get("web_url");
+              if (docsElement == null) {
                 text = "No Results";
               } else {
-                text = gSon.getDocsElement().getAsString().replace("\\n", "\n");
+                text = docsElement.getAsString().replace("\\n", "\n");
                 text = textToHtml(text, artistName);
                 DataBase.saveArtist(dataBase, artistName, text);
               }
-              findViewByID(gSon.getUrl().getAsString());
-              /*final String urlString = gSon.getUrl().getAsString();
-              findViewById(R.id.openUrlButton).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                  Intent intent = new Intent(Intent.ACTION_VIEW);
-                  intent.setData(Uri.parse(urlString));
-                  startActivity(intent);
-                }
-              });*/
+              findViewByID(url.getAsString());
             } catch (IOException e1) {
               Log.e("TAG", "Error " + e1);
               e1.printStackTrace();
@@ -82,14 +99,6 @@ public class OtherInfoWindow extends AppCompatActivity {
       intent.setData(Uri.parse(urlString));
       startActivity(intent);
     });
-  }
-
-  private void open(String artist) {
-    dataBase = new DataBase(this);
-    DataBase.saveArtist(dataBase, "test", "sarasa");
-    Log.e("TAG", ""+ DataBase.getInfo(dataBase,"test"));
-    Log.e("TAG",""+ DataBase.getInfo(dataBase,"nada"));
-    getArtistInfo(artist);
   }
 
   public static String textToHtml(String text, String term) {
