@@ -48,7 +48,7 @@ public class OtherInfoWindow extends AppCompatActivity {
     open(getIntent().getStringExtra("artistName"));
   }
 
-  public void getARtistInfo(String artistName) {
+  public void getArtistInfo(String artistName) {
 
     // create
     Retrofit retrofit = new Retrofit.Builder()
@@ -154,7 +154,7 @@ public class OtherInfoWindow extends AppCompatActivity {
     Log.e("TAG", ""+ DataBase.getInfo(dataBase,"test"));
     Log.e("TAG",""+ DataBase.getInfo(dataBase,"nada"));
 
-    getARtistInfo(artist);
+    getArtistInfo(artist);
   }
 
   public static String textToHtml(String text, String term) {

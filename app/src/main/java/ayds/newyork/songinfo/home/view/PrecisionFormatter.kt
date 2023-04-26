@@ -7,43 +7,37 @@ interface PrecisionFormatStrategy {
     fun format(date: String): String
 }
 internal class DayFormatStrategy : PrecisionFormatStrategy  {
-        override fun format(date: String): String {
-            val dayFormat = SimpleDateFormat("yyyy-MM-dd")
-            val dateWithoutFormat = dayFormat.parse(date)
-            return  dateWithoutFormat.date.toString() + "/" +
-                    dateWithoutFormat.month.inc().toString() + "/" +
-                    dateWithoutFormat.year.plus(1900).toString()
-        }
+    override fun format(date: String): String {
+        val dayFormat = SimpleDateFormat("yyyy-MM-dd")
+        val dateWithoutFormat = dayFormat.parse(date)
+        val dayMonthYearFormat = SimpleDateFormat("dd/MM/yyyy")
+        return dayMonthYearFormat.format(dateWithoutFormat)
     }
- internal class MonthFormatStrategy : PrecisionFormatStrategy {
-        override fun format(date: String): String {
-            var monthFormat = SimpleDateFormat("yyyy-MM")
-            var dateWithoutFormat = monthFormat.parse(date)
-            monthFormat = SimpleDateFormat("MMMM", Locale.ENGLISH)
-            val monthName = monthFormat.format(dateWithoutFormat)
-            val yearFormat = SimpleDateFormat("yyyy", Locale.ENGLISH)
-            dateWithoutFormat = yearFormat.parse(date)
-            val year = yearFormat.format(dateWithoutFormat)
-            return "$monthName, $year"
-        }
+}
+internal class MonthFormatStrategy : PrecisionFormatStrategy {
+    override fun format(date: String): String {
+        val monthYearFormat = SimpleDateFormat("yyyy-MM", Locale.ENGLISH)
+        val dateWithoutFormat = monthYearFormat.parse(date)
+        val dateFormat = SimpleDateFormat("MMMM, yyyy", Locale.ENGLISH)
+        return dateFormat.format(dateWithoutFormat)
     }
-  internal class YearFormatStrategy : PrecisionFormatStrategy {
-        override fun format(date: String): String {
-            val yearFormat = SimpleDateFormat("yyyy")
-            val dateWithoutFormat = yearFormat.parse(date)
-            val year = yearFormat.format(dateWithoutFormat)
-            return "$year ( ${isLeapYear(date)} )"
-        }
-
-        private fun isLeapYear(year: String): String {
-            val yearInt = year.toInt()
-            return if ((yearInt % 4 == 0) && ((yearInt % 100 != 0) || (yearInt % 400 == 0)))
-                "Leap year"
-            else "Not a leap year"
-        }
+}
+internal class YearFormatStrategy : PrecisionFormatStrategy {
+    override fun format(date: String): String {
+        val yearFormat = SimpleDateFormat("yyyy")
+        val dateWithoutFormat = yearFormat.parse(date)
+        val year = yearFormat.format(dateWithoutFormat)
+        return "$year ( ${leapYear(date)} )"
     }
-internal class NoStrategy : PrecisionFormatStrategy {
+    private fun leapYear(year: String): String {
+        val yearInt = year.toInt()
+        return if (yearInt % 4 == 0 && (yearInt % 100 != 0 || yearInt % 400 == 0))
+            "Leap year"
+        else "Not a leap year"
+    }
+}
+internal class DefaultStrategy : PrecisionFormatStrategy {
     override fun format(date: String) : String {
-       return ""
+        return "The precision is not valid"
     }
 }

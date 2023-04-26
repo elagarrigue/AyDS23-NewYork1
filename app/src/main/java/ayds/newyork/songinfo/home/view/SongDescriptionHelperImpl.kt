@@ -32,7 +32,7 @@ internal class SongDescriptionHelperImpl (private val formatDate: FormatterDate)
             "day" -> DayFormatStrategy()
             "month" -> MonthFormatStrategy()
             "year" -> YearFormatStrategy()
-            else -> NoStrategy()
+            else -> DefaultStrategy()
         }
     }
 }
