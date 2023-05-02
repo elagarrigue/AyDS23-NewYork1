@@ -9,36 +9,41 @@ import android.util.Log
 
 class DataBase(context: Context?) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+        private const val tableName = "artists"
+        private const val columnId = "id"
+        private const val columnName = "name"
+        private const val columnInfo = "info"
+        private const val columnSource = "source"
+        private const val DATABASE_NAME = "dictionary.db"
+        private const val DATABASE_VERSION = 1
+
     override fun onCreate(database: SQLiteDatabase) {
         createTable(database)
-        Log.i(this.javaClass.simpleName, "Database created.")
     }
 
     override fun onUpgrade(database: SQLiteDatabase, oldVersion: Int, newVersion: Int) {}
     private fun createTable(database: SQLiteDatabase) {
-        val createTableSql = ("CREATE TABLE IF NOT EXISTS artists ("
-                + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + "name TEXT NOT NULL, "
-                + "info TEXT NOT NULL, "
-                + "source INTEGER NOT NULL)")
+        val createTableSql = ("CREATE TABLE IF NOT EXISTS " + tableName + "("
+                + columnId + "INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + columnName + "TEXT NOT NULL, "
+                + columnInfo + "TEXT NOT NULL, "
+                + columnSource + "INTEGER NOT NULL)")
         database.execSQL(createTableSql)
     }
 
     companion object {
-        private const val DATABASE_NAME = "dictionary.db"
-        private const val DATABASE_VERSION = 1
         @JvmStatic
         fun saveArtist(dbHelper: DataBase, artist: String?, info: String?) {
             val database = dbHelper.writableDatabase
-            database.insert("artists", null, getValues(artist, info))
+            database.insert(tableName, null, getValues(artist, info))
             database.close()
         }
 
         private fun getValues(artist: String?, info: String?): ContentValues {
             val values = ContentValues()
-            values.put("name", artist)
-            values.put("info", info)
-            values.put("source", 1)
+            values.put(columnName, artist)
+            values.put(columnInfo, info)
+            values.put(columnSource, 1)
             return values
         }
 
@@ -46,15 +51,15 @@ class DataBase(context: Context?) :
         fun getInfo(dbHelper: DataBase, artist: String): String? {
             val database = dbHelper.readableDatabase
             val columns = arrayOf(
-                "id",
-                "name",
-                "info"
+                columnId,
+                columnName,
+                columnInfo
             )
-            val where = "name  = ?"
+            val where = columnName + " = ?"
             val whereArgs = arrayOf(artist)
-            val sortOrder = "name DESC"
+            val sortOrder = columnName + " DESC"
             val cursor =
-                makeQuery(database, "artists", columns, where, whereArgs, null, null, sortOrder)
+                makeQuery(database, tableName, columns, where, whereArgs, null, null, sortOrder)
             val items = addItems(cursor)
             cursor.close()
             return if (items.isEmpty()) null else items[0]
@@ -84,7 +89,7 @@ class DataBase(context: Context?) :
         private fun addItems(cursor: Cursor): List<String> {
             val items: MutableList<String> = ArrayList()
             while (cursor.moveToNext()) {
-                val info = cursor.getString(cursor.getColumnIndexOrThrow("info"))
+                val info = cursor.getString(cursor.getColumnIndexOrThrow(columnInfo))
                 items.add(info)
             }
             return items
