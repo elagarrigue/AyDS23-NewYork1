@@ -1,22 +1,13 @@
 package ayds.newyork.songinfo.moredetails.fulllogic
 
 import android.content.ContentValues
-import android.content.Context
 import android.database.Cursor
+import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 
 class DataBase(context: Context?) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
-        private const val tableName = "artists"
-        private const val columnId = "id"
-        private const val columnName = "name"
-        private const val columnInfo = "info"
-        private const val columnSource = "source"
-        private const val DATABASE_NAME = "dictionary.db"
-        private const val DATABASE_VERSION = 1
-
     override fun onCreate(database: SQLiteDatabase) {
         createTable(database)
     }
@@ -32,6 +23,14 @@ class DataBase(context: Context?) :
     }
 
     companion object {
+        private const val DATABASE_NAME = "dictionary.db"
+        private const val DATABASE_VERSION = 1
+        private const val tableName = "artists"
+        private const val columnId = "id"
+        private const val columnName = "name"
+        private const val columnInfo = "info"
+        private const val columnSource = "source"
+
         @JvmStatic
         fun saveArtist(dbHelper: DataBase, artist: String?, info: String?) {
             val database = dbHelper.writableDatabase
@@ -55,9 +54,9 @@ class DataBase(context: Context?) :
                 columnName,
                 columnInfo
             )
-            val where = columnName + " = ?"
+            val where = "$columnName = ?"
             val whereArgs = arrayOf(artist)
-            val sortOrder = columnName + " DESC"
+            val sortOrder = "$columnName DESC"
             val cursor =
                 makeQuery(database, tableName, columns, where, whereArgs, null, null, sortOrder)
             val items = addItems(cursor)
