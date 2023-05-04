@@ -4,164 +4,206 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.Html
-import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import ayds.newyork.songinfo.R
-import ayds.newyork.songinfo.moredetails.fulllogic.DataBase.Companion.getInfo
-import ayds.newyork.songinfo.moredetails.fulllogic.DataBase.Companion.saveArtist
+import ayds.newyork.songinfo.utils.UtilsInjector
+import ayds.newyork.songinfo.utils.view.ImageLoader
 import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import com.squareup.picasso.Picasso
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.io.IOException
-import java.util.*
+import java.util.Locale
+
+private const val RESPONSE = "response"
+private const val DOCS = "docs"
+private const val ABSTRACT = "abstract"
+private const val URL = "web_url"
+private const val NO_RESULTS = "No Results"
+private const val HTML_DIV_WIDTH = "<html><div width=400>"
+private const val HTML_FONT_FACE = "<font face=\"arial\">"
+private const val HTML_CLOSE_TAGS = "</font></div></html>"
+private const val APOSTROPHE = "'"
+private const val SPACE = " "
+private const val ENTER_LINE = "\n"
+private const val ENTER_LINE_ESCAPE_SEQ = "\\n"
+private const val HTML_BREAK = "<br>"
+private const val HTML_BOLD = "<b>"
+private const val HTML_BOLD_CLOSE = "</b>"
+private const val PREFIX = "[*]"
 
 class OtherInfoWindow : AppCompatActivity() {
-    private var textPanelInfo: TextView? = null
-    var dataBase = DataBase(this)
-    private val imageUrl =
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVioI832nuYIXqzySD8cOXRZEcdlAj3KfxA62UEC4FhrHVe0f7oZXp3_mSFG7nIcUKhg&usqp=CAU"
 
-    private fun open(artist: String?) {
-        getArtistInfo(artist)
-    }
+    private lateinit var moreDetailsTextPanel: TextView
+    private lateinit var imageView: ImageView
+    private lateinit var openButton: Button
+    private lateinit var dataBase: DataBase
+    private val imageLoader: ImageLoader = UtilsInjector.imageLoader
+    private var artistName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        textView()
-        open(intent.getStringExtra(ARTIST_NAME_EXTRA))
-    }
-
-    private fun textView() {
         setContentView(R.layout.activity_other_info)
-        textPanelInfo = findViewById(R.id.textPanelInfo)
-    }
-
-    private fun getArtistInfo(artistName: String?) {
-        Thread {
-            runOnUiThread {
-                loadAndSet(artistName)
-            }
-        }.start()
-    }
-
-    private fun loadAndSet(artistName: String?) {
+        initProperties()
+        initDataBase()
         loadImage()
-        setTextOnView(getArtistText(artistName))
+        initArtistName()
+        getArtistInfo()
+    }
+
+    private fun initProperties() {
+        moreDetailsTextPanel = findViewById(R.id.textPanelMoreDetails)
+        imageView = findViewById(R.id.imageView)
+        openButton = findViewById(R.id.openUrlButton)
+    }
+
+    private fun initDataBase() {
+        dataBase = DataBase(this)
     }
 
     private fun loadImage() {
-        val imageView = findViewById<ImageView>(R.id.imageView)
-        Picasso.get().load(imageUrl).into(imageView)
-    }
-
-    private fun setTextOnView(text: String?) {
-        textPanelInfo?.text = Html.fromHtml(text)
-    }
-
-    private fun getArtistText(artistName: String?): String? {
-        return textFormat(artistInfo(artistName), artistName)
-    }
-
-    private fun artistInfo(artistName: String?): String? {
-        return getInfo(dataBase, artistName)
-    }
-
-    private fun textFormat(text: String?, artistName: String?): String? {
-        if (text != null) {
-            return "[*]$text"
-        } else {
-            val response = getResponse(artistName, createNYTimesAPI())
-            val abstractElement = getAbstractElement(response)
-            val urlElement = getURLElement(response)
-            return if (abstractElement == null) {
-                "No Results"
-            } else {
-                val htmlText = formatFinal(abstractElement, artistName)
-                saveArtist(dataBase, artistName, htmlText)
-                setListener(urlElement?.asString)
-                htmlText
-            }
+        runOnUiThread {
+            imageLoader.loadImageIntoView(IMAGE_URL, imageView)
         }
     }
 
-    private fun formatFinal(abstractElement: JsonElement?, artistName: String?): String? {
-        val formattedText = abstractElement?.asString?.replace("\\n", "\n")
-        return textToHtml(formattedText, artistName)
+    private fun initArtistName() {
+        artistName = intent.getStringExtra(ARTIST_NAME_EXTRA)
     }
 
-    private fun getResponse(artistName: String?, NYTimesAPI: NYTimesAPI): JsonArray? {
-        return try {
-            jsonToArray(NYTimesAPI.getArtistInfo(artistName).execute())
+    private fun getArtistInfo() {
+        Thread {
+            val artistInfo = searchArtistInfo()
+            updateArtistInfo(artistInfo)
+        }.start()
+    }
 
-        } catch (e1: IOException) {
-            e1.printStackTrace()
+    private fun updateArtistInfo(artistInfo: ArtistInfo?) {
+       /* if (artistInfo?.url != null)
+            setListener(artistInfo.url)*/
+        if (artistInfo?.abstract != null) {
+            updateMoreDetailsTextPanel(artistInfo)
+        }
+    }
+
+    private fun buildArtistInfoAbstract(artistInfo: ArtistInfo): String? {
+        if (artistInfo.isLocallyStored) artistInfo.abstract =
+            PREFIX.plus(SPACE).plus("${artistInfo.abstract}")
+        return artistInfo.abstract
+    }
+
+    private fun searchArtistInfo(): ArtistInfo? {
+        var artistInfo = getInfoFromDataBase()
+        when {
+            artistInfo != null -> {
+                markArtistInfoAsLocal(artistInfo)
+            }
+            else -> {
+                artistInfo = getInfoFromNYAPI()
+                artistInfo?.let {
+                    dataBase.saveArtistInfo(artistInfo)
+                }
+            }
+        }
+        return artistInfo
+    }
+
+    private fun markArtistInfoAsLocal(artistInfo: ArtistInfo) {
+        artistInfo.isLocallyStored = true
+    }
+
+    private fun getTextFromAbstract(abstract: String?) =
+        if (abstract != null && abstract != "") getFormattedTextFromAbstract(abstract) else NO_RESULTS
+
+    private fun getFormattedTextFromAbstract(abstract: String): String {
+        val text = abstract.replace(ENTER_LINE_ESCAPE_SEQ, ENTER_LINE)
+        val textFormatted = replaceText(text)
+        return textToHtml(textFormatted)
+    }
+
+    private fun replaceText(text: String): String {
+        val textWithSpaces = text.replace(APOSTROPHE, SPACE)
+        val textWithEnterLines = textWithSpaces.replace(ENTER_LINE, HTML_BREAK)
+        val termUpperCase = artistName?.uppercase(Locale.getDefault())
+        return textWithEnterLines.replace(
+            "(?i)$artistName".toRegex(),
+            "$HTML_BOLD$termUpperCase$HTML_BOLD_CLOSE"
+        )
+    }
+
+    private fun getInfoFromDataBase(): ArtistInfo? {
+        return if (artistName != null) dataBase.getInfo(artistName!!) else null
+    }
+
+    private fun getInfoFromNYAPI(): ArtistInfo? {
+        return try {
+            val callResponse: Response<String> = newYorkTimesAPI.getArtistInfo(artistName).execute()
+            val jobj = Gson().fromJson(callResponse.body(), JsonObject::class.java)
+            return jsonToArtistInfo(jobj)
+        } catch (e: IOException) {
+            e.printStackTrace()
             null
         }
     }
 
-    private fun getAbstractElement(response: JsonArray?): JsonElement? {
-        return response?.get(0)?.asJsonObject?.get("abstract")
-    }
-
-    private fun getURLElement(response: JsonArray?): JsonElement? {
-        return response?.get(0)?.asJsonObject?.get("web_url")
-    }
-
-    private fun jsonToArray(callResponse: Response<String>): JsonArray {
-        val gson = Gson()
-        val jObj = gson.fromJson(callResponse.body(), JsonObject::class.java)
-        val responseObj = jObj.get("response").asJsonObject
-        return responseObj.getAsJsonArray("docs")
-    }
-
-    private fun setListener(urlString: String?) {
-        findViewById<View>(R.id.openUrlButton).setOnClickListener { v: View? ->
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse(urlString)
-            startActivity(intent)
+    private fun jsonToArtistInfo(jobj: JsonObject?): ArtistInfo? {
+        if (jobj == null)
+            return null
+        val response = jobj.get(RESPONSE).asJsonObject
+        val docs = response[DOCS].asJsonArray
+        val abstract = if (docs.size() == 0) getTextFromAbstract(null) else getTextFromAbstract(
+            docs.get(0).asJsonObject.get(ABSTRACT).asString
+        )
+        val url = if (docs.size() == 0) null
+                  else docs.get(0).asJsonObject.get(URL).asString
+        return artistName?.let {
+            ArtistInfo(
+                it, abstract, url
+            )
         }
     }
 
-    private fun createNYTimesAPI(): NYTimesAPI {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-        return retrofit.create(NYTimesAPI::class.java)
+  /*  private fun setListener(urlString: String) {
+        openButton.setOnClickListener {
+            openURL(urlString)
+        }
+    }*/
+
+    private fun openURL(urlString: String) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse(urlString)
+        startActivity(intent)
+    }
+
+
+    private fun updateMoreDetailsTextPanel(artistInfo: ArtistInfo) {
+        runOnUiThread {
+            moreDetailsTextPanel.text = Html.fromHtml(buildArtistInfoAbstract(artistInfo))
+        }
+    }
+
+    private fun textToHtml(text: String): String {
+        return StringBuilder()
+            .append(HTML_DIV_WIDTH)
+            .append(HTML_FONT_FACE)
+            .append(text)
+            .append(HTML_CLOSE_TAGS)
+            .toString()
     }
 
     companion object {
         const val ARTIST_NAME_EXTRA = "artistName"
-        private const val BASE_URL = "https://api.nytimes.com/svc/search/v2/"
-        private const val DIV_WIDTH = "<html><div width=400>"
-        private const val FONT_FACE = "<font face=\"arial\">"
-        private const val CLOSE_TAG = "</font></div></html>"
-        private const val ENTER_LINE = "\n"
-        private const val BR = "<br>"
-        private const val BOLD = "<b>"
-        private const val CLOSE_BOLD = "</b>"
-
-        fun textToHtml(text: String?, term: String?): String? {
-            val builder = StringBuilder()
-            builder.append(DIV_WIDTH)
-            builder.append(FONT_FACE)
-            builder.append(textWithBold(text, term))
-            builder.append(CLOSE_TAG)
-            return builder.toString()
-        }
-
-        private fun textWithBold(text: String?, term: String?): String? =
-            text?.replace("'", " ")?.replace(ENTER_LINE, BR)?.replace(
-                "(?i)$term".toRegex(),
-                BOLD + term?.uppercase(Locale.getDefault()) + CLOSE_BOLD
-            )
+        const val IMAGE_URL =
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVioI832nuYIXqzySD8cOXRZEcdlAj3KfxA62UEC4FhrHVe0f7oZXp3_mSFG7nIcUKhg&usqp=CAU"
+        private const val NYTIMES_URL = "https://api.nytimes.com/svc/search/v2/"
+        private val newYorkTimesRetrofit = Retrofit.Builder()
+            .baseUrl(NYTIMES_URL)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .build()
+        private val newYorkTimesAPI: NYTimesAPI = newYorkTimesRetrofit.create(NYTimesAPI::class.java)
     }
-
 }
