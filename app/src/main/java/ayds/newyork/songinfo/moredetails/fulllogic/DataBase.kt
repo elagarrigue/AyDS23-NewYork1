@@ -13,6 +13,7 @@ class DataBase(context: Context?) :
     override fun onCreate(database: SQLiteDatabase) {
         createTable(database)
     }
+
     override fun onUpgrade(database: SQLiteDatabase, oldVersion: Int, newVersion: Int) {}
 
     private fun createTable(database: SQLiteDatabase) {
@@ -37,20 +38,6 @@ class DataBase(context: Context?) :
         private const val COLUMN_INFO = "info"
         private const val COLUMN_SOURCE = "source"
 
-        fun saveArtist(dbHelper: DataBase, artist: String?, info: String?) {
-            val database = dbHelper.writableDatabase
-            database.insert(TABLE_NAME, null, getValues(artist, info))
-            database.close()
-        }
-
-        private fun getValues(artist: String?, info: String?): ContentValues {
-            val values = ContentValues()
-            values.put(COLUMN_NAME, artist)
-            values.put(COLUMN_INFO, info)
-            values.put(COLUMN_SOURCE, 1)
-            return values
-        }
-
         fun getInfo(dbHelper: DataBase, artist: String?): String? {
             val database = dbHelper.readableDatabase
             val columns = arrayOf(
@@ -62,7 +49,7 @@ class DataBase(context: Context?) :
             val whereArgs = arrayOf(artist)
             val sortOrder = "$COLUMN_NAME DESC"
             val cursor =
-                makeQuery(database, TABLE_NAME , columns, where, whereArgs, null, null, sortOrder)
+                makeQuery(database, TABLE_NAME, columns, where, whereArgs, null, null, sortOrder)
             val items = addItems(cursor)
             cursor.close()
             return if (items.isEmpty()) null else items[0]
@@ -97,5 +84,20 @@ class DataBase(context: Context?) :
             }
             return items
         }
+
+        fun saveArtist(dbHelper: DataBase, artist: String?, info: String?) {
+            val database = dbHelper.writableDatabase
+            database.insert(TABLE_NAME, null, getValues(artist, info))
+            database.close()
+        }
+
+        private fun getValues(artist: String?, info: String?): ContentValues {
+            val values = ContentValues()
+            values.put(COLUMN_NAME, artist)
+            values.put(COLUMN_INFO, info)
+            values.put(COLUMN_SOURCE, 1)
+            return values
+        }
+
     }
 }

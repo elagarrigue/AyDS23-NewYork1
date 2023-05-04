@@ -12,8 +12,11 @@ import ayds.newyork.songinfo.R
 import ayds.newyork.songinfo.moredetails.fulllogic.DataBase.Companion.getInfo
 import ayds.newyork.songinfo.moredetails.fulllogic.DataBase.Companion.saveArtist
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.squareup.picasso.Picasso
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.io.IOException
@@ -31,58 +34,91 @@ class OtherInfoWindow : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_other_info)
-        textPanelInfo = findViewById(R.id.textPanelInfo)
+        textView()
         open(intent.getStringExtra(ARTIST_NAME_EXTRA))
     }
 
-   private fun getArtistInfo(artistName: String?) {
-        val NYTimesAPI = createNYTimesAPI()
+    private fun textView() {
+        setContentView(R.layout.activity_other_info)
+        textPanelInfo = findViewById(R.id.textPanelInfo)
+    }
+
+    private fun getArtistInfo(artistName: String?) {
         Thread {
-            val text = getArtistText(artistName, NYTimesAPI)
-            runOnUiThread {  //cambiar
-                val imageView = findViewById<ImageView>(R.id.imageView)
-                Picasso.get().load(imageUrl).into(imageView)
-                textPanelInfo?.text = Html.fromHtml(text)
+            runOnUiThread {
+                loadAndSet(artistName)
             }
         }.start()
     }
-    private fun getArtistText(artistName: String?, NYTimesAPI: NYTimesAPI): String {
-        val text = getInfo(dataBase, artistName)
+
+    private fun loadAndSet(artistName: String?) {
+        loadImage()
+        setTextOnView(getArtistText(artistName))
+    }
+
+    private fun loadImage() {
+        val imageView = findViewById<ImageView>(R.id.imageView)
+        Picasso.get().load(imageUrl).into(imageView)
+    }
+
+    private fun setTextOnView(text: String?) {
+        textPanelInfo?.text = Html.fromHtml(text)
+    }
+
+    private fun getArtistText(artistName: String?): String? {
+        return textFormat(artistInfo(artistName), artistName)
+    }
+
+    private fun artistInfo(artistName: String?): String? {
+        return getInfo(dataBase, artistName)
+    }
+
+    private fun textFormat(text: String?, artistName: String?): String? {
         if (text != null) {
             return "[*]$text"
         } else {
-            val response = getResponse(artistName, NYTimesAPI)
-            val docsElement =
-                response?.getAsJsonArray("docs")?.get(0)?.asJsonObject?.get("abstract")
-            val url = response?.getAsJsonArray("docs")?.get(0)?.asJsonObject?.get("web_url")
-            return if (docsElement == null) {
+            val response = getResponse(artistName, createNYTimesAPI())
+            val abstractElement = getAbstractElement(response)
+            val urlElement = getURLElement(response)
+            return if (abstractElement == null) {
                 "No Results"
             } else {
-                val formattedText = docsElement.asString.replace("\\n", "\n")
-                val htmlText = textToHtml(formattedText, artistName)
-                saveArtist(dataBase,artistName, htmlText)
-                setListener(url?.asString)
+                val htmlText = formatFinal(abstractElement, artistName)
+                saveArtist(dataBase, artistName, htmlText)
+                setListener(urlElement?.asString)
                 htmlText
             }
         }
     }
-    private fun getResponse(artistName: String?, NYTimesAPI: NYTimesAPI): JsonObject? {
-        try {
-            val callResponse = NYTimesAPI.getArtistInfo(artistName).execute()
-            val gson = Gson()
-            val jObj = gson.fromJson(callResponse.body(), JsonObject::class.java)
-            val responseObj = jObj.get("response").asJsonObject
-            val docsArray = responseObj.getAsJsonArray("docs")
-            if (docsArray == null || docsArray.size() == 0) {
-                return null
-            }
 
-            return responseObj
+    private fun formatFinal(abstractElement: JsonElement?, artistName: String?): String? {
+        val formattedText = abstractElement?.asString?.replace("\\n", "\n")
+        return textToHtml(formattedText, artistName)
+    }
+
+    private fun getResponse(artistName: String?, NYTimesAPI: NYTimesAPI): JsonArray? {
+        return try {
+            jsonToArray(NYTimesAPI.getArtistInfo(artistName).execute())
+
         } catch (e1: IOException) {
             e1.printStackTrace()
-            return null
+            null
         }
+    }
+
+    private fun getAbstractElement(response: JsonArray?): JsonElement? {
+        return response?.get(0)?.asJsonObject?.get("abstract")
+    }
+
+    private fun getURLElement(response: JsonArray?): JsonElement? {
+        return response?.get(0)?.asJsonObject?.get("web_url")
+    }
+
+    private fun jsonToArray(callResponse: Response<String>): JsonArray {
+        val gson = Gson()
+        val jObj = gson.fromJson(callResponse.body(), JsonObject::class.java)
+        val responseObj = jObj.get("response").asJsonObject
+        return responseObj.getAsJsonArray("docs")
     }
 
     private fun setListener(urlString: String?) {
@@ -95,7 +131,7 @@ class OtherInfoWindow : AppCompatActivity() {
 
     private fun createNYTimesAPI(): NYTimesAPI {
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.nytimes.com/svc/search/v2/")
+            .baseUrl(BASE_URL)
             .addConverterFactory(ScalarsConverterFactory.create())
             .build()
         return retrofit.create(NYTimesAPI::class.java)
@@ -103,31 +139,29 @@ class OtherInfoWindow : AppCompatActivity() {
 
     companion object {
         const val ARTIST_NAME_EXTRA = "artistName"
+        private const val BASE_URL = "https://api.nytimes.com/svc/search/v2/"
         private const val DIV_WIDTH = "<html><div width=400>"
         private const val FONT_FACE = "<font face=\"arial\">"
         private const val CLOSE_TAG = "</font></div></html>"
         private const val ENTER_LINE = "\n"
         private const val BR = "<br>"
-        private const val BOLD= "<b>"
+        private const val BOLD = "<b>"
         private const val CLOSE_BOLD = "</b>"
 
-        fun textToHtml(text: String, term: String?): String {
+        fun textToHtml(text: String?, term: String?): String? {
             val builder = StringBuilder()
             builder.append(DIV_WIDTH)
             builder.append(FONT_FACE)
-            // Pasar a funcion
-            val textWithBold = text
-                .replace("'", " ")
-                .replace(ENTER_LINE, BR)
-                .replace(
-                    "(?i)$term".toRegex(),
-                    BOLD + term!!.uppercase(Locale.getDefault()) + CLOSE_BOLD
-                )
-            builder.append(textWithBold)
+            builder.append(textWithBold(text, term))
             builder.append(CLOSE_TAG)
             return builder.toString()
         }
-    }
 
+        private fun textWithBold(text: String?, term: String?): String? =
+            text?.replace("'", " ")?.replace(ENTER_LINE, BR)?.replace(
+                "(?i)$term".toRegex(),
+                BOLD + term?.uppercase(Locale.getDefault()) + CLOSE_BOLD
+            )
+    }
 
 }
