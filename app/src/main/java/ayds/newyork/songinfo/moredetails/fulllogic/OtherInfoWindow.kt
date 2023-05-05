@@ -83,8 +83,8 @@ class OtherInfoWindow : AppCompatActivity() {
     }
 
     private fun updateArtistInfo(artistInfo: ArtistInfo?) {
-       /* if (artistInfo?.url != null)
-            setListener(artistInfo.url)*/
+        if (artistInfo?.url != null)
+            setListener(artistInfo.url)
         if (artistInfo?.abstract != null) {
             updateMoreDetailsTextPanel(artistInfo)
         }
@@ -159,7 +159,7 @@ class OtherInfoWindow : AppCompatActivity() {
             docs.get(0).asJsonObject.get(ABSTRACT).asString
         )
         val url = if (docs.size() == 0) null
-                  else docs.get(0).asJsonObject.get(URL).asString
+        else docs.get(0).asJsonObject.get(URL).asString
         return artistName?.let {
             ArtistInfo(
                 it, abstract, url
@@ -167,11 +167,11 @@ class OtherInfoWindow : AppCompatActivity() {
         }
     }
 
-  /*  private fun setListener(urlString: String) {
+    private fun setListener(urlString: String) {
         openButton.setOnClickListener {
             openURL(urlString)
         }
-    }*/
+    }
 
     private fun openURL(urlString: String) {
         val intent = Intent(Intent.ACTION_VIEW)
@@ -204,6 +204,7 @@ class OtherInfoWindow : AppCompatActivity() {
             .baseUrl(NYTIMES_URL)
             .addConverterFactory(ScalarsConverterFactory.create())
             .build()
-        private val newYorkTimesAPI: NYTimesAPI = newYorkTimesRetrofit.create(NYTimesAPI::class.java)
+        private val newYorkTimesAPI: NYTimesAPI =
+            newYorkTimesRetrofit.create(NYTimesAPI::class.java)
     }
 }
