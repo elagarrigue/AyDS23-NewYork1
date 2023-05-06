@@ -1,42 +1,41 @@
-package ayds.newyork.songinfo.moredetails.fulllogic
+package ayds.newyork.songinfo.moredetails.fulllogic.model.data.local.sqldb
 
 import android.content.ContentValues
-import android.database.Cursor
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformation
+import ayds.newyork.songinfo.moredetails.fulllogic.model.data.local.ArtistInfoLocalStorage
 
-private const val DATABASE_NAME = "dictionary.db"
-private const val DATABASE_VERSION = 1
-private const val TABLE_NAME = "artists"
-private const val COLUMN_ID = "id"
-private const val COLUMN_NAME = "name"
-private const val COLUMN_INFO = "info"
-private const val COLUMN_SOURCE = "source"
-private const val COLUMN_URL = "url"
-private const val CREATE_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS " +
+const val DATABASE_NAME = "dictionary.db"
+const val DATABASE_VERSION = 1
+const val CREATE_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS " +
         "$TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
         "$COLUMN_NAME TEXT NOT NULL, $COLUMN_INFO TEXT NOT NULL," +
         "$COLUMN_SOURCE INTEGER NOT NULL, " +
         "$COLUMN_URL STRING)"
-private const val WHERE = "$COLUMN_NAME = ?"
-private const val SORT_ORDER = "$COLUMN_NAME DESC"
-class DataBase(context: Context) :
-    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+const val WHERE = "$COLUMN_NAME = ?"
+const val SORT_ORDER = "$COLUMN_NAME DESC"
 
-    override fun onCreate(database: SQLiteDatabase) {
+internal class ArtistInfoLocalStorageImpl(context: Context, private val cursorToArtistInfoMapper: CursorToArtistInfoMapper,) :
+    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) , ArtistInfoLocalStorage {
+
+     override fun onCreate(database: SQLiteDatabase) {
         database.execSQL(CREATE_TABLE_QUERY)
     }
 
     override fun onUpgrade(database: SQLiteDatabase, oldVersion: Int, newVersion: Int) {}
 
-
-    fun saveArtistInfo(artistInfo: ArtistInfo) {
+    override fun onDowngrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        onUpgrade(db, oldVersion, newVersion)
+    }
+    override fun saveArtistInfo(artistInfo: ArtistInformation) {
         this.writableDatabase.insert(TABLE_NAME, null, getValues(artistInfo))
         this.writableDatabase.close()
     }
 
-    fun getInfo(artist: String): ArtistInfo? {
+    override fun getArtistInfo(artist: String): ArtistInformation? {
         val columns = arrayOf(
             COLUMN_ID,
             COLUMN_NAME,
@@ -45,9 +44,7 @@ class DataBase(context: Context) :
         )
         val cursor =
             getCursor(TABLE_NAME, columns, WHERE, arrayOf(artist), null, null, SORT_ORDER)
-        val artistInfo = getInfoFromCursor(cursor)
-        cursor.close()
-        return artistInfo
+        return cursorToArtistInfoMapper.map(cursor)
     }
     private fun getCursor(
         table: String,
@@ -68,20 +65,8 @@ class DataBase(context: Context) :
             sortOrder
         )
     }
-    private fun getInfoFromCursor(cursor: Cursor): ArtistInfo? {
-        return try {
-            if (cursor.moveToFirst()) {
-                val artist = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME))
-                val info = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_INFO))
-                val url = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_URL))
-                ArtistInfo(artist, info, url)
-            } else null
-        } catch (err: IllegalArgumentException) {
-            err.printStackTrace()
-            null
-        }
-    }
-    private fun getValues(artistInfo: ArtistInfo): ContentValues {
+
+    private fun getValues(artistInfo: ArtistInformation): ContentValues {
         val values = ContentValues()
         values.put(COLUMN_NAME, artistInfo.artistName)
         values.put(COLUMN_INFO, artistInfo.abstract)

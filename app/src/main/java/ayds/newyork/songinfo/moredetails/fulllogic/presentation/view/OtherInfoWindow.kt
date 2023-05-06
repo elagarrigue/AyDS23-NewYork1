@@ -1,4 +1,4 @@
-package ayds.newyork.songinfo.moredetails.fulllogic
+package ayds.newyork.songinfo.moredetails.fulllogic.presentation.view
 
 import android.content.Intent
 import android.net.Uri
@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import ayds.newyork.songinfo.R
+import ayds.newyork.songinfo.moredetails.fulllogic.presentation.*
 import ayds.newyork.songinfo.utils.UtilsInjector
 import ayds.newyork.songinfo.utils.view.ImageLoader
 import com.google.gson.Gson
@@ -17,7 +18,9 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.io.IOException
-import java.util.Locale
+import java.util.*
+import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformation
+import ayds.newyork.songinfo.moredetails.fulllogic.presentation.presenter.Presenter
 
 private const val RESPONSE = "response"
 private const val DOCS = "docs"
@@ -41,28 +44,28 @@ class OtherInfoWindow : AppCompatActivity() {
     private lateinit var moreDetailsTextPanel: TextView
     private lateinit var imageView: ImageView
     private lateinit var openButton: Button
-    private lateinit var dataBase: DataBase
+    private lateinit var presenter: Presenter
     private val imageLoader: ImageLoader = UtilsInjector.imageLoader
     private var artistName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_other_info)
-        initProperties()
-        initDataBase()
+        /*initProperties()
+        initRepository()
         loadImage()
         initArtistName()
-        getArtistInfo()
+        getArtistInfo()*/
     }
 
-    private fun initProperties() {
+    /*private fun initProperties() {
         moreDetailsTextPanel = findViewById(R.id.textPanelMoreDetails)
         imageView = findViewById(R.id.imageView)
         openButton = findViewById(R.id.openUrlButton)
     }
 
-    private fun initDataBase() {
-        dataBase = DataBase(this)
+    private fun initRepository() {
+        //artistInfoRepository = ArtistInfoRepositoryImpl(artistInfoLocalStorage = ArtistInfoLocalStorageImpl(),,)
     }
 
     private fun loadImage() {
@@ -82,7 +85,7 @@ class OtherInfoWindow : AppCompatActivity() {
         }.start()
     }
 
-    private fun updateArtistInfo(artistInfo: ArtistInfo?) {
+    private fun updateArtistInfo(artistInfo: ArtistInformation?) {
         if (artistInfo?.url != null)
             setListener(artistInfo.url)
         if (artistInfo?.abstract != null) {
@@ -90,13 +93,15 @@ class OtherInfoWindow : AppCompatActivity() {
         }
     }
 
-    private fun buildArtistInfoAbstract(artistInfo: ArtistInfo): String? {
+    private fun buildArtistInfoAbstract(artistInfo: ArtistInformation): String? {
         if (artistInfo.isLocallyStored) artistInfo.abstract =
             PREFIX.plus(SPACE).plus("${artistInfo.abstract}")
         return artistInfo.abstract
     }
 
-    private fun searchArtistInfo(): ArtistInfo? {
+  /*  Esto lo hacemos en ArtistInfoRepositoryImpl
+    private fun searchArtistInfo(): ArtistInformation? {
+
         var artistInfo = getInfoFromDataBase()
         when {
             artistInfo != null -> {
@@ -105,7 +110,7 @@ class OtherInfoWindow : AppCompatActivity() {
             else -> {
                 artistInfo = getInfoFromNYAPI()
                 artistInfo?.let {
-                    dataBase.saveArtistInfo(artistInfo)
+                    artistInfoLocalStorage.saveArtistInfo(artistInfo)
                 }
             }
         }
@@ -114,7 +119,7 @@ class OtherInfoWindow : AppCompatActivity() {
 
     private fun markArtistInfoAsLocal(artistInfo: ArtistInfo) {
         artistInfo.isLocallyStored = true
-    }
+    }*/
 
     private fun getTextFromAbstract(abstract: String?) =
         if (abstract != null && abstract != "") getFormattedTextFromAbstract(abstract) else NO_RESULTS
@@ -136,7 +141,7 @@ class OtherInfoWindow : AppCompatActivity() {
     }
 
     private fun getInfoFromDataBase(): ArtistInfo? {
-        return if (artistName != null) dataBase.getInfo(artistName!!) else null
+        return if (artistName != null) artistInfoLocalStorage.getInfo(artistName!!) else null
     }
 
     private fun getInfoFromNYAPI(): ArtistInfo? {
@@ -207,4 +212,6 @@ class OtherInfoWindow : AppCompatActivity() {
         private val newYorkTimesAPI: NYTimesAPI =
             newYorkTimesRetrofit.create(NYTimesAPI::class.java)
     }
+
+     */
 }
