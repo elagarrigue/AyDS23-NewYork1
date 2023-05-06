@@ -8,15 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper
 import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformation
 import ayds.newyork.songinfo.moredetails.fulllogic.model.data.local.ArtistInfoLocalStorage
 
-const val DATABASE_NAME = "dictionary.db"
-const val DATABASE_VERSION = 1
-const val CREATE_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS " +
-        "$TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        "$COLUMN_NAME TEXT NOT NULL, $COLUMN_INFO TEXT NOT NULL," +
-        "$COLUMN_SOURCE INTEGER NOT NULL, " +
-        "$COLUMN_URL STRING)"
-const val WHERE = "$COLUMN_NAME = ?"
-const val SORT_ORDER = "$COLUMN_NAME DESC"
 
 internal class ArtistInfoLocalStorageImpl(context: Context, private val cursorToArtistInfoMapper: CursorToArtistInfoMapper,) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) , ArtistInfoLocalStorage {

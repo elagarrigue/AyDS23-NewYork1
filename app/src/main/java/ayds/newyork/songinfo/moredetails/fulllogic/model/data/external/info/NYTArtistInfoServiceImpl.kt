@@ -1,7 +1,7 @@
 package ayds.newyork.songinfo.moredetails.fulllogic.model.data.external.info
 
-import ayds.newyork.songinfo.moredetails.fulllogic.model.ArtistInformation
 import ayds.newyork.songinfo.moredetails.fulllogic.model.data.external.NYTArtistInfoService
+import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformation
 import retrofit2.Response
 
 internal class NYTArtistInfoServiceImpl (
