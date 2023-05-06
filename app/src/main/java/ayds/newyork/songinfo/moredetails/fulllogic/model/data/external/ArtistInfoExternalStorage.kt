@@ -1,11 +1,12 @@
 package ayds.newyork.songinfo.moredetails.fulllogic.model.data.external
 
+import ayds.newyork.songinfo.moredetails.fulllogic.model.data.external.info.NYTArtistInfoServiceImpl
 import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformation
 
-class ArtistInfoExternalStorage {
+class ArtistInfoExternalStorage(private val nytArtistInfoService: NYTArtistInfoServiceImpl) {
 
-    fun getArtistInfo(name: String) : ArtistInformation? {
+    fun getArtistInfo(name: String): ArtistInformation? {
 
-        return null//NYTtoArtistInfoResolve.
+        return nytArtistInfoService.getArtistInfo(name)
     }
 }
