@@ -6,6 +6,7 @@ import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformatio
 abstract class Presenter {
 
     abstract val artistInfoRepository : ArtistInfoRepository;
+
     fun getArtistInfo(artistName: String?) : ArtistInformation?{
        return artistName?.let { artistInfoRepository.getArtistInfoByTerm(it) }
     }

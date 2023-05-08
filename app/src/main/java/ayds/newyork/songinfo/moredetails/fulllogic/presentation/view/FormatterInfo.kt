@@ -13,7 +13,11 @@ class FormatterInfo {
             if (artistInfo.isLocallyStored) {
                 artistInfo.abstract = PREFIX.plus(SPACE).plus("${artistInfo.abstract}")
                 return getFormattedTextFromAbstract(artistInfo.abstract!!)
-            } else return NO_RESULTS
+            } else {
+                return NO_RESULTS
+            }
+        } else {
+            return NO_RESULTS
         }
     }
 

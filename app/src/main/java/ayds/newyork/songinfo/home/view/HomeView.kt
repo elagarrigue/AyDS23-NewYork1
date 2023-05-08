@@ -50,7 +50,7 @@ class HomeViewActivity : AppCompatActivity(), HomeView {
 
     override fun navigateToOtherDetails(artistName: String) {
         val intent = Intent(this, OtherInfoView::class.java)
-        intent.putExtra(OtherInfoView.ARTIST_NAME_EXTRA, artistName)
+        intent.putExtra(OtherInfoView.getArtistNameExtra(), artistName)
         startActivity(intent)
     }
     override fun openExternalLink(url: String) {
