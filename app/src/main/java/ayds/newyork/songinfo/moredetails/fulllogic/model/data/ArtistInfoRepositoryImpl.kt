@@ -6,7 +6,7 @@ import ayds.newyork.songinfo.moredetails.fulllogic.model.data.external.ArtistInf
 import ayds.newyork.songinfo.moredetails.fulllogic.model.data.local.sqldb.ArtistInfoLocalStorageImpl
 
 
-internal class ArtistInfoRepositoryImpl(
+class ArtistInfoRepositoryImpl(
     private val artistInfoLocalStorage: ArtistInfoLocalStorageImpl,
     private val artistInfoExternalStorage: ArtistInfoExternalStorage,
 ) : ArtistInfoRepository {
@@ -15,7 +15,9 @@ internal class ArtistInfoRepositoryImpl(
         var artistInfo = artistInfoLocalStorage.getArtistInfo(name)
 
         when {
-            artistInfo != null -> markArtistInfoAsLocal(artistInfo)
+            artistInfo is ArtistInformation.ArtistInformationData -> markArtistInfoAsLocal(
+                artistInfo
+            )
             else -> {
                 try {
                     artistInfo = artistInfoExternalStorage.getArtistInfo(name)
@@ -23,21 +25,22 @@ internal class ArtistInfoRepositoryImpl(
                     artistInfo?.let {
                         when {
                             isSavedArtistInfo(name) -> artistInfoLocalStorage.getArtistInfo(name)
-                            else -> artistInfoLocalStorage.saveArtistInfo(artistInfo!!)
+                            else -> artistInfoLocalStorage.saveArtistInfo(artistInfo as ArtistInformation.ArtistInformationData)
                         }
                     }
                 } catch (e: Exception) {
-                    artistInfo = null
+                    artistInfo = ArtistInformation.ArtistInformationEmpty
                 }
             }
         }
 
-        return artistInfo ?: null
+        return artistInfo
     }
 
-    private fun isSavedArtistInfo(name: String) = artistInfoLocalStorage.getArtistInfo(name) != null
+    private fun isSavedArtistInfo(name: String) =
+        artistInfoLocalStorage.getArtistInfo(name) is ArtistInformation.ArtistInformationData
 
-    private fun markArtistInfoAsLocal(artistInfo: ArtistInformation) {
+    private fun markArtistInfoAsLocal(artistInfo: ArtistInformation.ArtistInformationData) {
         artistInfo.isLocallyStored = true
     }
 }

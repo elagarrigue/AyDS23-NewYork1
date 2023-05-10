@@ -14,21 +14,18 @@ internal class JsonToArtistInfoResolver : NYTtoArtistInfoResolver {
         name: String,
         serviceData: String?
     ): ArtistInformation? {
-        return try {
-            serviceData?.getFirstItem()?.let { item ->
-                ArtistInformation(
+        if (serviceData.getFirstItem() != null) {
+            return serviceData?.getFirstItem()?.let { item ->
+                ArtistInformation.ArtistInformationData(
                     name,
                     item.getAbstract(),
                     item.getURL()
                 )
             }
-        } catch (e: Exception) {
-            null
-        }
+        } else return ArtistInformation.ArtistInformationEmpty
     }
 
     private fun String?.getFirstItem(): JsonObject? {
-        //return null
         val jobj = Gson().fromJson(this, JsonObject::class.java)
         val docs = jobj[DOCS].asJsonArray
         val items = docs[0].asJsonArray

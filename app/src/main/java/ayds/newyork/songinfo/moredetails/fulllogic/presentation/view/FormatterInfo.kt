@@ -1,18 +1,17 @@
 package ayds.newyork.songinfo.moredetails.fulllogic.presentation.view
 
-import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformation
 import java.util.*
 
 class FormatterInfo {
 
     private var artistName: String = ""
 
-    fun buildArtistInfoAbstract(artistInfo: ArtistInformation): String {
-        artistName = artistInfo.artistName
-        if (artistInfo.abstract != null && artistInfo.abstract != "") {
-            if (artistInfo.isLocallyStored) {
-                artistInfo.abstract = PREFIX.plus(SPACE).plus("${artistInfo.abstract}")
-                return getFormattedTextFromAbstract(artistInfo.abstract!!)
+    fun buildArtistInfoAbstract(artistName: String, abstract: String, isLocalStored: Boolean): String {
+        this.artistName = artistName
+        if (abstract != null && abstract != "") {
+            if (isLocalStored) {
+                val text = PREFIX.plus(SPACE).plus("${abstract}")
+                return getFormattedTextFromAbstract(text!!)
             } else {
                 return NO_RESULTS
             }

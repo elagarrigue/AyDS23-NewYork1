@@ -16,7 +16,7 @@ class Subject<T> : Observable<T>, Publisher<T> {
         observers.remove(observer)
     }
 
-    override fun notify(value: ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformation?) {
+    override fun notify(value: T) {
         this.value = value
         observers.forEach { 
             it.update(value)

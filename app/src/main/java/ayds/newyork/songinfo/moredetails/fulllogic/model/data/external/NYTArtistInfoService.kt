@@ -1,6 +1,6 @@
 package ayds.newyork.songinfo.moredetails.fulllogic.model.data.external
 
-import ayds.newyork.songinfo.moredetails.fulllogic.model.ArtistInformation
+import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformation
 
 interface NYTArtistInfoService {
 

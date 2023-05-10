@@ -9,24 +9,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import ayds.newyork.songinfo.R
-import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformation
-import ayds.newyork.songinfo.moredetails.fulllogic.presentation.MoreDetailsPresentationInjector
-import ayds.newyork.songinfo.moredetails.fulllogic.presentation.MoreDetailsUIEvent
-import ayds.newyork.songinfo.moredetails.fulllogic.presentation.MoreDetailsUIState
 import ayds.newyork.songinfo.utils.UtilsInjector
 import ayds.newyork.songinfo.utils.view.ImageLoader
 import ayds.newyork.songinfo.moredetails.fulllogic.presentation.presenter.Presenter
-import ayds.observer.Observable
-import ayds.observer.Subject
+import ayds.newyork.songinfo.moredetails.fulllogic.injector.DependenciesInjector
 
 const val ARTIST_NAME_EXTRA = "artistName"
 const val IMAGE_URL =
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVioI832nuYIXqzySD8cOXRZEcdlAj3KfxA62UEC4FhrHVe0f7oZXp3_mSFG7nIcUKhg&usqp=CAU"
 
 interface OtherInfoView {
-    val uiEventObservable: Observable<MoreDetailsUIEvent>
-    val uiState: MoreDetailsUIState
-
     companion object {
         fun getArtistNameExtra(): String {
             return ARTIST_NAME_EXTRA
@@ -34,19 +26,16 @@ interface OtherInfoView {
     }
 }
 
-class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompatActivity(),
+class OtherInfoViewActivity() : AppCompatActivity(),
     OtherInfoView {
 
-    private val onActionSubject = Subject<MoreDetailsUIEvent>()
     private lateinit var moreDetailsTextPanel: TextView
     private lateinit var imageView: ImageView
     private lateinit var openButton: Button
     private lateinit var presenter: Presenter
+    private val formatterInfo: FormatterInfo = FormatterInfo()
     private val imageLoader: ImageLoader = UtilsInjector.imageLoader
     private var artistName: String? = null
-
-    override val uiEventObservable: Observable<MoreDetailsUIEvent> = onActionSubject
-    override var uiState: MoreDetailsUIState = MoreDetailsUIState()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,9 +47,10 @@ class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompa
         getArtistInfo()
     }
 
+
     private fun initModule() {
-        MoreDetailsPresentationInjector.initView(this)
-        presenter = MoreDetailsPresentationInjector.getPresenter()
+        DependenciesInjector.init(this)
+        presenter = DependenciesInjector.getPresenter()
     }
 
     private fun initProperties() {
@@ -80,15 +70,20 @@ class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompa
     }
 
     private fun getArtistInfo() = Thread {
-        val artistInfo = presenter.getArtistInfo(artistName)
-        updateListeners(artistInfo)
+        presenter.getArtistInfo(artistName!!)
+        updateListeners()
     }.start()
 
-    private fun updateListeners(artistInfo: ArtistInformation?) {
-        if (artistInfo?.url != null)
-            setListener(artistInfo.url)
-        if (artistInfo?.abstract != null) {
-            updateMoreDetailsTextPanel(artistInfo)
+    private fun updateListeners() {
+        var url = presenter.uiState.url
+        var abstract = presenter.uiState.abstract
+        var isLocalStored = presenter.uiState.isLocallyStored
+        var artistName = presenter.uiState.artistName
+
+        if (url != null)
+            setListener(url)
+        if (abstract != null) {
+            updateMoreDetailsTextPanel(artistName, abstract, isLocalStored)
         }
     }
 
@@ -105,10 +100,20 @@ class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompa
     }
 
 
-    private fun updateMoreDetailsTextPanel(artistInfo: ArtistInformation) {
+    private fun updateMoreDetailsTextPanel(
+        artistName: String,
+        abstract: String,
+        isLocalStored: Boolean
+    ) {
         runOnUiThread {
             moreDetailsTextPanel.text =
-                Html.fromHtml(formatterInfo.buildArtistInfoAbstract(artistInfo))
+                Html.fromHtml(
+                    formatterInfo.buildArtistInfoAbstract(
+                        artistName,
+                        abstract,
+                        isLocalStored
+                    )
+                )
         }
     }
 

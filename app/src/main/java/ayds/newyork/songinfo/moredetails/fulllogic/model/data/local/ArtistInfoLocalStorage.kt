@@ -11,7 +11,7 @@ interface ArtistInfoLocalStorage {
 
     fun onDowngrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int)
 
-    fun saveArtistInfo(artistInfo: ArtistInformation)
+    fun saveArtistInfo(artistInfo: ArtistInformation.ArtistInformationData)
 
-    fun getArtistInfo(artist: String) : ArtistInformation?
+    fun getArtistInfo(artist: String): ArtistInformation?
 }

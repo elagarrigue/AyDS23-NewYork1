@@ -9,10 +9,13 @@ import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformatio
 import ayds.newyork.songinfo.moredetails.fulllogic.model.data.local.ArtistInfoLocalStorage
 
 
-internal class ArtistInfoLocalStorageImpl(context: Context, private val cursorToArtistInfoMapper: CursorToArtistInfoMapper,) :
-    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) , ArtistInfoLocalStorage {
+class ArtistInfoLocalStorageImpl(
+    context: Context,
+    private val cursorToArtistInfoMapper: CursorToArtistInfoMapper,
+) :
+    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), ArtistInfoLocalStorage {
 
-     override fun onCreate(database: SQLiteDatabase) {
+    override fun onCreate(database: SQLiteDatabase) {
         database.execSQL(CREATE_TABLE_QUERY)
     }
 
@@ -21,7 +24,8 @@ internal class ArtistInfoLocalStorageImpl(context: Context, private val cursorTo
     override fun onDowngrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         onUpgrade(db, oldVersion, newVersion)
     }
-    override fun saveArtistInfo(artistInfo: ArtistInformation) {
+
+    override fun saveArtistInfo(artistInfo: ArtistInformation.ArtistInformationData) {
         this.writableDatabase.insert(TABLE_NAME, null, getValues(artistInfo))
         this.writableDatabase.close()
     }
@@ -37,6 +41,7 @@ internal class ArtistInfoLocalStorageImpl(context: Context, private val cursorTo
             getCursor(TABLE_NAME, columns, WHERE, arrayOf(artist), null, null, SORT_ORDER)
         return cursorToArtistInfoMapper.map(cursor)
     }
+
     private fun getCursor(
         table: String,
         columns: Array<String>,
@@ -57,12 +62,12 @@ internal class ArtistInfoLocalStorageImpl(context: Context, private val cursorTo
         )
     }
 
-    private fun getValues(artistInfo: ArtistInformation): ContentValues {
+    private fun getValues(artistInfo: ArtistInformation.ArtistInformationData): ContentValues {
         val values = ContentValues()
         values.put(COLUMN_NAME, artistInfo.artistName)
         values.put(COLUMN_INFO, artistInfo.abstract)
         values.put(COLUMN_SOURCE, 1)
-        values.put(COLUMN_URL,artistInfo.url)
+        values.put(COLUMN_URL, artistInfo.url)
         return values
     }
 
