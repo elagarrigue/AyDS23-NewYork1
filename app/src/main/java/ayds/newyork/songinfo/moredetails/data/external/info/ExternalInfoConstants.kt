@@ -1,4 +1,4 @@
-package ayds.newyork.songinfo.moredetails.fulllogic.model.data.external.info
+package ayds.newyork.songinfo.moredetails.data.external.info
 
 const val DOCS = "docs"
 const val ABSTRACT = "abstract"

@@ -1,9 +1,9 @@
-package ayds.newyork.songinfo.moredetails.fulllogic.model.data
+package ayds.newyork.songinfo.moredetails.data
 
-import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInfoRepository
-import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformation
-import ayds.newyork.songinfo.moredetails.fulllogic.model.data.external.ArtistInfoExternalStorage
-import ayds.newyork.songinfo.moredetails.fulllogic.model.data.local.sqldb.ArtistInfoLocalStorageImpl
+import ayds.newyork.songinfo.moredetails.domain.ArtistInfoRepository
+import ayds.newyork.songinfo.moredetails.domain.ArtistInformation
+import ayds.newyork.songinfo.moredetails.data.external.ArtistInfoExternalStorage
+import ayds.newyork.songinfo.moredetails.data.local.sqldb.ArtistInfoLocalStorageImpl
 
 
 class ArtistInfoRepositoryImpl(
@@ -21,13 +21,7 @@ class ArtistInfoRepositoryImpl(
             else -> {
                 try {
                     artistInfo = artistInfoExternalStorage.getArtistInfo(name)
-
-                    artistInfo?.let {
-                        when {
-                            isSavedArtistInfo(name) -> artistInfoLocalStorage.getArtistInfo(name)
-                            else -> artistInfoLocalStorage.saveArtistInfo(artistInfo as ArtistInformation.ArtistInformationData)
-                        }
-                    }
+                    artistInfoLocalStorage.saveArtistInfo(artistInfo as ArtistInformation.ArtistInformationData)
                 } catch (e: Exception) {
                     artistInfo = ArtistInformation.ArtistInformationEmpty
                 }
@@ -36,9 +30,6 @@ class ArtistInfoRepositoryImpl(
 
         return artistInfo
     }
-
-    private fun isSavedArtistInfo(name: String) =
-        artistInfoLocalStorage.getArtistInfo(name) is ArtistInformation.ArtistInformationData
 
     private fun markArtistInfoAsLocal(artistInfo: ArtistInformation.ArtistInformationData) {
         artistInfo.isLocallyStored = true

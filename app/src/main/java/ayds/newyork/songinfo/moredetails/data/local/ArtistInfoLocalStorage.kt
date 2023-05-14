@@ -1,7 +1,7 @@
-package ayds.newyork.songinfo.moredetails.fulllogic.model.data.local
+package ayds.newyork.songinfo.moredetails.data.local
 
 import android.database.sqlite.SQLiteDatabase
-import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformation
+import ayds.newyork.songinfo.moredetails.domain.ArtistInformation
 
 interface ArtistInfoLocalStorage {
 

@@ -1,6 +1,6 @@
-package ayds.newyork.songinfo.moredetails.fulllogic.model.data.external.info
+package ayds.newyork.songinfo.moredetails.data.external.info
 
-import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformation
+import ayds.newyork.songinfo.moredetails.domain.ArtistInformation
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 
@@ -14,15 +14,13 @@ internal class JsonToArtistInfoResolver : NYTtoArtistInfoResolver {
         name: String,
         serviceData: String?
     ): ArtistInformation? {
-        if (serviceData.getFirstItem() != null) {
-            return serviceData?.getFirstItem()?.let { item ->
-                ArtistInformation.ArtistInformationData(
-                    name,
-                    item.getAbstract(),
-                    item.getURL()
-                )
-            }
-        } else return ArtistInformation.ArtistInformationEmpty
+        return serviceData.getFirstItem()?.let { item ->
+            ArtistInformation.ArtistInformationData(
+                name,
+                item.getAbstract(),
+                item.getURL()
+            )
+        } ?: ArtistInformation.ArtistInformationEmpty
     }
 
     private fun String?.getFirstItem(): JsonObject? {

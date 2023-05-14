@@ -1,4 +1,4 @@
-package ayds.newyork.songinfo.moredetails.fulllogic.presentation.view
+package ayds.newyork.songinfo.moredetails.presentation.view
 
 import android.content.Intent
 import android.net.Uri
@@ -11,29 +11,20 @@ import androidx.appcompat.app.AppCompatActivity
 import ayds.newyork.songinfo.R
 import ayds.newyork.songinfo.utils.UtilsInjector
 import ayds.newyork.songinfo.utils.view.ImageLoader
-import ayds.newyork.songinfo.moredetails.fulllogic.presentation.presenter.Presenter
-import ayds.newyork.songinfo.moredetails.fulllogic.injector.DependenciesInjector
-
-const val ARTIST_NAME_EXTRA = "artistName"
-const val IMAGE_URL =
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVioI832nuYIXqzySD8cOXRZEcdlAj3KfxA62UEC4FhrHVe0f7oZXp3_mSFG7nIcUKhg&usqp=CAU"
+import ayds.newyork.songinfo.moredetails.presentation.presenter.Presenter
+import ayds.newyork.songinfo.moredetails.injector.DependenciesInjector
 
 interface OtherInfoView {
-    companion object {
-        fun getArtistNameExtra(): String {
-            return ARTIST_NAME_EXTRA
-        }
-    }
+    fun getArtistNameExtra(): String
 }
 
-class OtherInfoViewActivity() : AppCompatActivity(),
+class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompatActivity(),
     OtherInfoView {
 
     private lateinit var moreDetailsTextPanel: TextView
     private lateinit var imageView: ImageView
     private lateinit var openButton: Button
     private lateinit var presenter: Presenter
-    private val formatterInfo: FormatterInfo = FormatterInfo()
     private val imageLoader: ImageLoader = UtilsInjector.imageLoader
     private var artistName: String? = null
 
@@ -46,7 +37,6 @@ class OtherInfoViewActivity() : AppCompatActivity(),
         initArtistName()
         getArtistInfo()
     }
-
 
     private fun initModule() {
         DependenciesInjector.init(this)
@@ -61,17 +51,19 @@ class OtherInfoViewActivity() : AppCompatActivity(),
 
     private fun loadImage() {
         runOnUiThread {
-            imageLoader.loadImageIntoView(IMAGE_URL, imageView)
+            imageLoader.loadImageIntoView(presenter.uiState.imageURL, imageView)
         }
     }
 
     private fun initArtistName() {
-        artistName = intent.getStringExtra(ARTIST_NAME_EXTRA)
+        artistName = intent.getStringExtra(presenter.uiState.artistNameExtra)
     }
 
     private fun getArtistInfo() = Thread {
-        presenter.getArtistInfo(artistName!!)
-        updateListeners()
+        artistName?.let { name ->
+            presenter.getArtistInfo(name)
+            updateListeners()
+        }
     }.start()
 
     private fun updateListeners() {
@@ -115,6 +107,10 @@ class OtherInfoViewActivity() : AppCompatActivity(),
                     )
                 )
         }
+    }
+
+    override fun getArtistNameExtra(): String {
+        return presenter.uiState.artistNameExtra
     }
 
 }

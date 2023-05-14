@@ -1,4 +1,4 @@
-package ayds.newyork.songinfo.moredetails.fulllogic.presentation.view
+package ayds.newyork.songinfo.moredetails.presentation.view
 
 const val NO_RESULTS = "No Results"
 const val HTML_DIV_WIDTH = "<html><div width=400>"

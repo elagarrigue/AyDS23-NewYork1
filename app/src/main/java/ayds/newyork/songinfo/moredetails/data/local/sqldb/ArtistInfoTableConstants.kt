@@ -1,4 +1,4 @@
-package ayds.newyork.songinfo.moredetails.fulllogic.model.data.local.sqldb
+package ayds.newyork.songinfo.moredetails.data.local.sqldb
 
 
 const val TABLE_NAME = "artists"

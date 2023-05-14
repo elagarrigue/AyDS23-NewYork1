@@ -1,12 +1,12 @@
-package ayds.newyork.songinfo.moredetails.fulllogic.model.data.local.sqldb
+package ayds.newyork.songinfo.moredetails.data.local.sqldb
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformation
-import ayds.newyork.songinfo.moredetails.fulllogic.model.data.local.ArtistInfoLocalStorage
+import ayds.newyork.songinfo.moredetails.domain.ArtistInformation
+import ayds.newyork.songinfo.moredetails.data.local.ArtistInfoLocalStorage
 
 
 class ArtistInfoLocalStorageImpl(
@@ -62,13 +62,13 @@ class ArtistInfoLocalStorageImpl(
         )
     }
 
-    private fun getValues(artistInfo: ArtistInformation.ArtistInformationData): ContentValues {
-        val values = ContentValues()
-        values.put(COLUMN_NAME, artistInfo.artistName)
-        values.put(COLUMN_INFO, artistInfo.abstract)
-        values.put(COLUMN_SOURCE, 1)
-        values.put(COLUMN_URL, artistInfo.url)
-        return values
-    }
+    private fun getValues(artistInfo: ArtistInformation.ArtistInformationData): ContentValues =
+        ContentValues().apply {
+            put(COLUMN_NAME, artistInfo.artistName)
+            put(COLUMN_INFO, artistInfo.abstract)
+            put(COLUMN_SOURCE, 1)
+            put(COLUMN_URL, artistInfo.url)
+        }
+
 
 }

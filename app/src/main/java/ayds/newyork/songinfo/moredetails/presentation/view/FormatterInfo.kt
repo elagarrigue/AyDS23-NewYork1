@@ -1,4 +1,4 @@
-package ayds.newyork.songinfo.moredetails.fulllogic.presentation.view
+package ayds.newyork.songinfo.moredetails.presentation.view
 
 import java.util.*
 
@@ -6,18 +6,16 @@ class FormatterInfo {
 
     private var artistName: String = ""
 
-    fun buildArtistInfoAbstract(artistName: String, abstract: String, isLocalStored: Boolean): String {
+    fun buildArtistInfoAbstract(artistName: String, abstract: String?, isLocalStored: Boolean): String {
         this.artistName = artistName
-        if (abstract != null && abstract != "") {
+        return abstract?.takeIf { it.isNullOrBlank() }?.let {
             if (isLocalStored) {
-                val text = PREFIX.plus(SPACE).plus("${abstract}")
-                return getFormattedTextFromAbstract(text!!)
+                val text = "$PREFIX $it"
+                getFormattedTextFromAbstract(text)
             } else {
-                return NO_RESULTS
+                NO_RESULTS
             }
-        } else {
-            return NO_RESULTS
-        }
+        } ?: NO_RESULTS
     }
 
     private fun getFormattedTextFromAbstract(abstract: String): String {

@@ -1,7 +1,7 @@
-package ayds.newyork.songinfo.moredetails.fulllogic.model.data.local.sqldb
+package ayds.newyork.songinfo.moredetails.data.local.sqldb
 
 import android.database.Cursor
-import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformation
+import ayds.newyork.songinfo.moredetails.domain.ArtistInformation
 
 
 interface CursorToArtistInfoMapper {

@@ -1,8 +1,8 @@
-package ayds.newyork.songinfo.moredetails.fulllogic.presentation.presenter
+package ayds.newyork.songinfo.moredetails.presentation.presenter
 
-import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInfoRepository
-import ayds.newyork.songinfo.moredetails.fulllogic.model.domain.ArtistInformation
-import ayds.newyork.songinfo.moredetails.fulllogic.presentation.MoreDetailsUIState
+import ayds.newyork.songinfo.moredetails.domain.ArtistInfoRepository
+import ayds.newyork.songinfo.moredetails.domain.ArtistInformation
+import ayds.newyork.songinfo.moredetails.presentation.MoreDetailsUIState
 
 interface Presenter {
 
