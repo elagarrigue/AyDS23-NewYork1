@@ -2,7 +2,6 @@ package ayds.newyork.songinfo.moredetails.presentation.presenter
 
 import ayds.newyork.songinfo.moredetails.domain.ArtistInfoRepository
 import ayds.newyork.songinfo.moredetails.domain.ArtistInformation
-import ayds.newyork.songinfo.moredetails.presentation.MoreDetailsUIState
 
 interface Presenter {
 

@@ -1,4 +1,4 @@
-package ayds.newyork.songinfo.moredetails.presentation
+package ayds.newyork.songinfo.moredetails.presentation.presenter
 
 data class MoreDetailsUIState(
     val artistName: String = "",
