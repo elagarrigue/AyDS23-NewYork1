@@ -12,7 +12,6 @@ import ayds.newyork.songinfo.moredetails.domain.ArtistInfoRepository
 import ayds.newyork.songinfo.moredetails.presentation.presenter.Presenter
 import ayds.newyork.songinfo.moredetails.presentation.presenter.PresenterImpl
 import ayds.newyork.songinfo.moredetails.presentation.view.FormatterInfo
-import ayds.newyork.songinfo.moredetails.presentation.view.OtherInfoView
 import ayds.newyork.songinfo.moredetails.presentation.view.OtherInfoViewActivity
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -23,9 +22,9 @@ object DependenciesInjector {
     private lateinit var presenter: Presenter
     private const val NYTIMES_URL = "https://api.nytimes.com/svc/search/v2/"
 
-    val otherInfo : OtherInfoView = OtherInfoViewActivity(formatterInfo = FormatterInfo())
+    val otherInfo : OtherInfoViewActivity = OtherInfoViewActivity(formatterInfo = FormatterInfo())
 
-    fun init(otherInfoView: OtherInfoView) {
+    fun init(otherInfoView: OtherInfoViewActivity) {
 
         val artistInfoLocalStorage = ArtistInfoLocalStorageImpl(
             otherInfoView as Context,

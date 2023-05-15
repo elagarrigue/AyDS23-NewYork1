@@ -27,7 +27,7 @@ internal class YearFormatStrategy : PrecisionFormatStrategy {
         val yearFormat = SimpleDateFormat("yyyy")
         val dateWithoutFormat = yearFormat.parse(date)
         val year = yearFormat.format(dateWithoutFormat)
-        return "$year ( ${leapYear(date)} )"
+        return "$year (${leapYear(year)})"
     }
     private fun leapYear(year: String): String {
         val yearInt = year.toInt()

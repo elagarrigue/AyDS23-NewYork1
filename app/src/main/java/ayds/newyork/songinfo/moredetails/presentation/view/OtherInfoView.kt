@@ -14,17 +14,13 @@ import ayds.newyork.songinfo.utils.view.ImageLoader
 import ayds.newyork.songinfo.moredetails.presentation.presenter.Presenter
 import ayds.newyork.songinfo.moredetails.injector.DependenciesInjector
 
-interface OtherInfoView {
-    fun getArtistNameExtra(): String
-}
+private lateinit var presenter: Presenter
 
-class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompatActivity(),
-    OtherInfoView {
+class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompatActivity(){
 
     private lateinit var moreDetailsTextPanel: TextView
     private lateinit var imageView: ImageView
     private lateinit var openButton: Button
-    private lateinit var presenter: Presenter
     private val imageLoader: ImageLoader = UtilsInjector.imageLoader
     private var artistName: String? = null
 
@@ -109,8 +105,9 @@ class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompa
         }
     }
 
-    override fun getArtistNameExtra(): String {
-        return presenter.uiState.artistNameExtra
+    companion object{
+        fun getArtistNameExtra(): String {
+            return presenter.uiState.artistNameExtra
+        }
     }
-
 }
