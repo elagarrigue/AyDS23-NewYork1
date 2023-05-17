@@ -7,8 +7,8 @@ import org.junit.Assert
 import org.junit.Test
 
 class SongDescriptionHelperTest {
-
-    private val songDescriptionHelper by lazy { SongDescriptionHelperImpl() }
+    private val formatDate= FormatterDate()
+    private val songDescriptionHelper by lazy { SongDescriptionHelperImpl(formatDate) }
 
     @Test
     fun `given a local song it should return the description`() {
@@ -20,6 +20,7 @@ class SongDescriptionHelperTest {
             "1992-01-01",
             "url",
             "url",
+            "year",
             true,
         )
 
@@ -29,7 +30,7 @@ class SongDescriptionHelperTest {
             "Song: Plush [*]\n" +
                     "Artist: Stone Temple Pilots\n" +
                     "Album: Core\n" +
-                    "Year: 1992"
+                    "Release Date: 1992 (Leap year)"
 
         Assert.assertEquals(expected, result)
     }
@@ -44,6 +45,7 @@ class SongDescriptionHelperTest {
             "1992-01-01",
             "url",
             "url",
+            "year",
             false,
         )
 
@@ -53,7 +55,7 @@ class SongDescriptionHelperTest {
             "Song: Plush \n" +
                     "Artist: Stone Temple Pilots\n" +
                     "Album: Core\n" +
-                    "Year: 1992"
+                    "Release Date: 1992 (Leap year)"
 
         Assert.assertEquals(expected, result)
     }

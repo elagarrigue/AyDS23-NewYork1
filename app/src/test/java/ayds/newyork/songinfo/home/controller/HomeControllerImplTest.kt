@@ -13,6 +13,7 @@ import org.junit.Before
 import org.junit.Test
 
 
+
 class HomeControllerTest {
 
     private val homeModel: HomeModel = mockk(relaxUnitFun = true)
@@ -43,7 +44,7 @@ class HomeControllerTest {
     @Test
     fun `on more details event should navigate to more details`() {
         every { homeView.uiState } returns HomeUiState(songId = "id")
-        val song: Song = mockk { every { artistName } returns "artist" }
+        val song: Song.SpotifySong = mockk { every { artistName } returns "artist" }
         every { homeModel.getSongById("id") } returns song
 
         onActionSubject.notify(HomeUiEvent.MoreDetails)
@@ -60,3 +61,5 @@ class HomeControllerTest {
         verify { homeView.openExternalLink("url") }
     }
 }
+
+
