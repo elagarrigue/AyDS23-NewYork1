@@ -1,9 +1,7 @@
 package ayds.newyork.songinfo.moredetails.domain
 
 sealed class ArtistInformation {
-
     data class ArtistInformationData (
-
         val artistName: String,
         var abstract: String?,
         val url: String?,
@@ -11,5 +9,4 @@ sealed class ArtistInformation {
     ) : ArtistInformation()
 
     object ArtistInformationEmpty : ArtistInformation()
-
 }

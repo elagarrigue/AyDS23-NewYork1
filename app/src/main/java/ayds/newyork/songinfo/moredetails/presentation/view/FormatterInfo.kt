@@ -2,9 +2,7 @@ package ayds.newyork.songinfo.moredetails.presentation.view
 
 import java.util.*
 
-class FormatterInfo {
-
-    private var artistName: String = ""
+class FormatterInfo(var artistName: String) {
 
     fun buildArtistInfoAbstract(artistName: String, abstract: String?, isLocalStored: Boolean): String {
         this.artistName = artistName

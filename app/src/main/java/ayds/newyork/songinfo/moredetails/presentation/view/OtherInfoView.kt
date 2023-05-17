@@ -13,16 +13,21 @@ import ayds.newyork.songinfo.utils.UtilsInjector
 import ayds.newyork.songinfo.utils.view.ImageLoader
 import ayds.newyork.songinfo.moredetails.presentation.presenter.Presenter
 import ayds.newyork.songinfo.moredetails.injector.DependenciesInjector
+import ayds.newyork.songinfo.moredetails.presentation.presenter.MoreDetailsUIState
+import ayds.observer.Observer
 
-private lateinit var presenter: Presenter
-
-class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompatActivity(){
-
+class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompatActivity() {
+    private lateinit var presenter: Presenter
     private lateinit var moreDetailsTextPanel: TextView
     private lateinit var imageView: ImageView
     private lateinit var openButton: Button
     private val imageLoader: ImageLoader = UtilsInjector.imageLoader
     private var artistName: String? = null
+
+    private val observer: Observer<MoreDetailsUIState> =
+        Observer { value ->
+            updateMoreDetailsView(value)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,12 +36,17 @@ class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompa
         initProperties()
         loadImage()
         initArtistName()
+        subscribeUiState()
         getArtistInfo()
     }
 
     private fun initModule() {
         DependenciesInjector.init(this)
         presenter = DependenciesInjector.getPresenter()
+    }
+
+    private fun subscribeUiState() {
+        presenter.uiStateObservable.subscribe(observer)
     }
 
     private fun initProperties() {
@@ -55,42 +65,32 @@ class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompa
         artistName = intent.getStringExtra(presenter.uiState.artistNameExtra)
     }
 
-    private fun getArtistInfo() = Thread {
+    private fun getArtistInfo() {
         artistName?.let { name ->
             presenter.getArtistInfo(name)
-            updateListeners()
-        }
-    }.start()
-
-    private fun updateListeners() {
-        var url = presenter.uiState.url
-        var abstract = presenter.uiState.abstract
-        var isLocalStored = presenter.uiState.isLocallyStored
-        var artistName = presenter.uiState.artistName
-
-        if (url != null)
-            setListener(url)
-        if (abstract != null) {
-            updateMoreDetailsTextPanel(artistName, abstract, isLocalStored)
         }
     }
 
-    private fun setListener(urlString: String) {
+    private fun updateMoreDetailsView(uiState: MoreDetailsUIState) {
+        updateMoreDetailsTextPanel(uiState.artistName, uiState.abstract, uiState.isLocallyStored)
+        updateUrl(uiState.url)
+    }
+
+    private fun updateUrl(urlString: String?) {
         openButton.setOnClickListener {
             openURL(urlString)
         }
     }
 
-    private fun openURL(urlString: String) {
+    private fun openURL(urlString: String?) {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(urlString)
         startActivity(intent)
     }
 
-
     private fun updateMoreDetailsTextPanel(
         artistName: String,
-        abstract: String,
+        abstract: String?,
         isLocalStored: Boolean
     ) {
         runOnUiThread {
@@ -105,9 +105,9 @@ class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompa
         }
     }
 
-    companion object{
+    companion object {
         fun getArtistNameExtra(): String {
-            return presenter.uiState.artistNameExtra
+            return DependenciesInjector.getPresenter().uiState.artistNameExtra
         }
     }
 }
