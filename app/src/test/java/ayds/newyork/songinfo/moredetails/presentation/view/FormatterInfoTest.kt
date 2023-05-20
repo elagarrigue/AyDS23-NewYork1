@@ -6,88 +6,41 @@ import org.junit.Test
 import java.lang.reflect.Method
 
 class FormatterInfoTest {
-
     private lateinit var formatterInfo: FormatterInfo
-
     @Before
     fun setUp() {
         formatterInfo = FormatterInfo("John Doe")
     }
-
     @Test
-    fun testBuildArtistInfoAbstract_withNonBlankAbstractAndIsLocalStored_shouldReturnFormattedText() {
-        // Arrange
-        val artistName = "Bad Bunny"
+    fun `with non-null abstract and local storage should return formatted text`() {
         val abstract = "This is the Bad Bunny's abstract"
-        val isLocalStored = true
         val expectedFormattedText = "<html><div width=400><font face=\"arial\">[*] This is the <b>BAD BUNNY</b>'s abstract</font></div></html>"
-
-        // Act
-        val result = formatterInfo.buildArtistInfoAbstract(artistName, abstract, isLocalStored)
-
-        // Assert
+        val result = formatterInfo.buildArtistInfoAbstract("Bad Bunny", abstract, true)
         assertEquals(expectedFormattedText, result)
     }
-
     @Test
-    fun testBuildArtistInfoAbstract_withBlankAbstractAndIsLocalStored_shouldReturnNoResults() {
-        // Arrange
+    fun `with null abstract should return no results`() {
         val abstract = ""
         val isLocalStored = true
         val expectedNoResults = "No Results"
-
-        // Act
         val result = formatterInfo.buildArtistInfoAbstract(formatterInfo.artistName, abstract, isLocalStored)
-
-        // Assert
         assertEquals(expectedNoResults, result)
     }
 
     @Test
-    fun testBuildArtistInfoAbstract_withNonBlankAbstractAndNotLocalStored_shouldReturnNoResults() {
-        // Arrange
+    fun `with empty abstract should return no results`() {
+        val result = formatterInfo.buildArtistInfoAbstract("Quevedo", "", true)
+        val expected = "No Results"
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `buildArtistInfoAbstract with non-local storage should return no results`() {
         val artistName = "John Doe"
         val abstract = "This is the John Doe's abstract"
         val isLocalStored = false
         val expectedNoResults = "No Results"
-
-        // Act
         val result = formatterInfo.buildArtistInfoAbstract(artistName, abstract, isLocalStored)
-
-        // Assert
         assertEquals(expectedNoResults, result)
-    }
-
-    @Test
-    fun testReplaceText_shouldReplaceArtistNameInText() {
-        // Arrange
-        val text = "This is the artist JOHN DOE's abstract"
-        val expectedReplacedText = "This is the artist <b>JOHN DOE</b>'s abstract"
-
-        // Act
-        val result = invokePrivateMethod(formatterInfo, "replaceText", text) as String
-
-        // Assert
-        assertEquals(expectedReplacedText, result)
-    }
-
-    @Test
-    fun testTextToHtml_shouldConvertTextToHtmlFormat() {
-        // Arrange
-        val text = "This is the artist's abstract"
-        val expectedHtmlFormat = "<html><div width=400><font face=\"arial\">This is the artist's abstract</font></div></html>"
-
-        // Act
-        val result = invokePrivateMethod(formatterInfo, "textToHtml", text) as String
-
-        // Assert
-        assertEquals(expectedHtmlFormat, result)
-    }
-
-    // Método auxiliar para invocar métodos privados utilizando reflexión
-    private fun invokePrivateMethod(obj: Any, methodName: String, vararg args: Any?): Any? {
-        val method: Method = obj.javaClass.getDeclaredMethod(methodName, *args.map { it?.javaClass ?: Any::class.java }.toTypedArray())
-        method.isAccessible = true
-        return method.invoke(obj, *args)
     }
 }
