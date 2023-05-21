@@ -3,34 +3,38 @@ package ayds.newyork.songinfo.moredetails.presentation.presenter
 import ayds.newyork.songinfo.moredetails.domain.ArtistInfoRepository
 import ayds.newyork.songinfo.moredetails.domain.ArtistInformation
 import ayds.observer.Observable
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class PresenterImplTest {
+class MoreDetailsPresenterImplTest {
 
-    private lateinit var presenter: PresenterImpl
-    private lateinit var mockRepository: MockArtistInfoRepository
+    private lateinit var moreDetailsPresenter: MoreDetailsPresenter
+    private lateinit var artistInfoRepository: ArtistInfoRepository
     private lateinit var uiStateObservable: Observable<MoreDetailsUIState>
 
     @Before
     fun setUp() {
-        mockRepository = MockArtistInfoRepository()
-        presenter = PresenterImpl(mockRepository)
-        uiStateObservable = presenter.uiStateObservable
+        artistInfoRepository = mockk()
+        moreDetailsPresenter = MoreDetailsPresenterImpl(artistInfoRepository)
+        uiStateObservable = moreDetailsPresenter.uiStateObservable
     }
 
     @Test
     fun `getArtistInfo with non-existing artist should update UI state to empty`() {
         val expectedUiState = MoreDetailsUIState()
 
-        presenter.getArtistInfo("Non-existing artist")
+        every { artistInfoRepository.getArtistInfoByTerm("Non-existing artist") } returns null
+
+        moreDetailsPresenter.getArtistInfo("Non-existing artist")
 
         waitForUiThread()
 
-        assertEquals(expectedUiState, presenter.uiState)
+        assertEquals(expectedUiState, moreDetailsPresenter.uiState)
     }
 
     @Test
@@ -49,13 +53,13 @@ class PresenterImplTest {
             isLocallyStored = artistInfoData.isLocallyStored
         )
 
-        mockRepository.artistInfo = artistInfoData
+        every { artistInfoRepository.getArtistInfoByTerm(artistName) } returns artistInfoData
 
-        presenter.getArtistInfo(artistName)
+        moreDetailsPresenter.getArtistInfo(artistName)
 
         waitForUiThread()
 
-        assertEquals(expectedUiState, presenter.uiState)
+        assertEquals(expectedUiState, moreDetailsPresenter.uiState)
     }
 
     private fun waitForUiThread() {
@@ -65,12 +69,5 @@ class PresenterImplTest {
         }
         latch.await(2, TimeUnit.SECONDS)
     }
-
-    private class MockArtistInfoRepository : ArtistInfoRepository {
-        var artistInfo: ArtistInformation? = null
-
-        override fun getArtistInfoByTerm(artistName: String): ArtistInformation? {
-            return artistInfo
-        }
-    }
 }
+
