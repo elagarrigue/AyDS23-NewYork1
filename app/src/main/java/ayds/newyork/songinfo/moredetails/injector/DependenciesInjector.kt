@@ -9,15 +9,15 @@ import ayds.newyork.songinfo.moredetails.data.external.info.NYTimesAPI
 import ayds.newyork.songinfo.moredetails.data.local.sqldb.ArtistInfoLocalStorageImpl
 import ayds.newyork.songinfo.moredetails.data.local.sqldb.CursorToArtistInfoMapperImpl
 import ayds.newyork.songinfo.moredetails.domain.ArtistInfoRepository
-import ayds.newyork.songinfo.moredetails.presentation.presenter.Presenter
-import ayds.newyork.songinfo.moredetails.presentation.presenter.PresenterImpl
+import ayds.newyork.songinfo.moredetails.presentation.presenter.MoreDetailsPresenter
+import ayds.newyork.songinfo.moredetails.presentation.presenter.MoreDetailsPresenterImpl
 import ayds.newyork.songinfo.moredetails.presentation.view.FormatterInfo
 import ayds.newyork.songinfo.moredetails.presentation.view.OtherInfoViewActivity
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
 object DependenciesInjector {
-    private lateinit var presenter: Presenter
+    private lateinit var moreDetailsPresenter: MoreDetailsPresenter
     private const val NYTIMES_URL = "https://api.nytimes.com/svc/search/v2/"
     val otherInfo: OtherInfoViewActivity = OtherInfoViewActivity(formatterInfo = FormatterInfo(""))
 
@@ -36,8 +36,8 @@ object DependenciesInjector {
         val artistInfoExternalStorage = ArtistInfoExternalStorageImpl(nyToArtistInfoService)
         val artistInfoRepository: ArtistInfoRepository =
             ArtistInfoRepositoryImpl(artistInfoLocalStorage, artistInfoExternalStorage)
-        presenter = PresenterImpl(artistInfoRepository)
+        moreDetailsPresenter = MoreDetailsPresenterImpl(artistInfoRepository)
     }
 
-    fun getPresenter(): Presenter = presenter
+    fun getPresenter(): MoreDetailsPresenter = moreDetailsPresenter
 }

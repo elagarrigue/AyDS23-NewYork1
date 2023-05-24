@@ -11,13 +11,13 @@ import androidx.appcompat.app.AppCompatActivity
 import ayds.newyork.songinfo.R
 import ayds.newyork.songinfo.utils.UtilsInjector
 import ayds.newyork.songinfo.utils.view.ImageLoader
-import ayds.newyork.songinfo.moredetails.presentation.presenter.Presenter
+import ayds.newyork.songinfo.moredetails.presentation.presenter.MoreDetailsPresenter
 import ayds.newyork.songinfo.moredetails.injector.DependenciesInjector
 import ayds.newyork.songinfo.moredetails.presentation.presenter.MoreDetailsUIState
 import ayds.observer.Observer
 
 class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompatActivity() {
-    private lateinit var presenter: Presenter
+    private lateinit var moreDetailsPresenter: MoreDetailsPresenter
     private lateinit var moreDetailsTextPanel: TextView
     private lateinit var imageView: ImageView
     private lateinit var openButton: Button
@@ -42,11 +42,11 @@ class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompa
 
     private fun initModule() {
         DependenciesInjector.init(this)
-        presenter = DependenciesInjector.getPresenter()
+        moreDetailsPresenter = DependenciesInjector.getPresenter()
     }
 
     private fun subscribeUiState() {
-        presenter.uiStateObservable.subscribe(observer)
+        moreDetailsPresenter.uiStateObservable.subscribe(observer)
     }
 
     private fun initProperties() {
@@ -57,17 +57,17 @@ class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompa
 
     private fun loadImage() {
         runOnUiThread {
-            imageLoader.loadImageIntoView(presenter.uiState.imageURL, imageView)
+            imageLoader.loadImageIntoView(moreDetailsPresenter.uiState.imageURL, imageView)
         }
     }
 
     private fun initArtistName() {
-        artistName = intent.getStringExtra(presenter.uiState.artistNameExtra)
+        artistName = intent.getStringExtra(moreDetailsPresenter.uiState.artistNameExtra)
     }
 
     private fun getArtistInfo() {
         artistName?.let { name ->
-            presenter.getArtistInfo(name)
+            moreDetailsPresenter.getArtistInfo(name)
         }
     }
 

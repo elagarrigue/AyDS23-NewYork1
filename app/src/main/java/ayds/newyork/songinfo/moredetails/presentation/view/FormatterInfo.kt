@@ -3,17 +3,18 @@ package ayds.newyork.songinfo.moredetails.presentation.view
 import java.util.*
 
 class FormatterInfo(var artistName: String) {
-
-    fun buildArtistInfoAbstract(artistName: String, abstract: String?, isLocalStored: Boolean): String {
+    fun buildArtistInfoAbstract(
+        artistName: String,
+        abstract: String?,
+        isLocalStored: Boolean
+    ): String {
         this.artistName = artistName
-        return abstract?.takeIf { it.isNullOrBlank() }?.let {
-            if (isLocalStored) {
-                val text = "$PREFIX $it"
-                getFormattedTextFromAbstract(text)
-            } else {
-                NO_RESULTS
-            }
-        } ?: NO_RESULTS
+        return if (abstract.isNullOrBlank() || !isLocalStored) {
+            NO_RESULTS
+        } else {
+            val text = "$PREFIX $abstract"
+            getFormattedTextFromAbstract(text)
+        }
     }
 
     private fun getFormattedTextFromAbstract(abstract: String): String {
@@ -23,13 +24,9 @@ class FormatterInfo(var artistName: String) {
     }
 
     private fun replaceText(text: String): String {
-        val textWithSpaces = text.replace(APOSTROPHE, SPACE)
-        val textWithEnterLines = textWithSpaces.replace(ENTER_LINE, HTML_BREAK)
-        val termUpperCase = artistName?.uppercase(Locale.getDefault())
-        return textWithEnterLines.replace(
-            "(?i)$artistName".toRegex(),
-            "$HTML_BOLD$termUpperCase$HTML_BOLD_CLOSE"
-        )
+        val textWithEnterLines = text.replace(ENTER_LINE, HTML_BREAK)
+        val termUpperCase = artistName.uppercase(Locale.getDefault())
+        return textWithEnterLines.replace("(?i)$artistName".toRegex(), "$HTML_BOLD$termUpperCase$HTML_BOLD_CLOSE")
     }
 
     private fun textToHtml(text: String): String {
