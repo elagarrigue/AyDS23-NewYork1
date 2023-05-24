@@ -42,7 +42,6 @@ class ArtistInfoRepositoryImplTest {
         )
         every { mockLocalStorage.getArtistInfo(artistName) } returns null
         every { mockExternalStorage.getArtistInfo(artistName) } returns artistInfo
-        every { mockLocalStorage.saveArtistInfo(artistInfo) } just Runs
 
         val result = repository.getArtistInfoByTerm(artistName)
 

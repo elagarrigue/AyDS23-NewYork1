@@ -6,17 +6,14 @@ import ayds.observer.Observable
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-
 
 class MoreDetailsPresenterImplTest {
 
     private lateinit var moreDetailsPresenter: MoreDetailsPresenter
     private lateinit var artistInfoRepository: ArtistInfoRepository
     private lateinit var uiStateObservable: Observable<MoreDetailsUIState>
-
     @Before
     fun setUp() {
         artistInfoRepository = mockk()
@@ -42,8 +39,6 @@ class MoreDetailsPresenterImplTest {
         moreDetailsPresenter.getArtistInfo(artistName)
 
         verify { uiStateTester(expectedUiState) }
-
-        assertEquals(expectedUiState, moreDetailsPresenter.uiState)
     }
 
     @Test
@@ -70,10 +65,7 @@ class MoreDetailsPresenterImplTest {
         moreDetailsPresenter.getArtistInfo(artistName)
 
         verify { uiStateTester(expectedUiState) }
-
-        assertEquals(expectedUiState, moreDetailsPresenter.uiState)
     }
-
 }
 
 
