@@ -5,18 +5,15 @@ import ayds.newyork.songinfo.moredetails.domain.ArtistInformation
 import ayds.observer.Observable
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.Assert.assertEquals
+import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 class MoreDetailsPresenterImplTest {
 
     private lateinit var moreDetailsPresenter: MoreDetailsPresenter
     private lateinit var artistInfoRepository: ArtistInfoRepository
     private lateinit var uiStateObservable: Observable<MoreDetailsUIState>
-
     @Before
     fun setUp() {
         artistInfoRepository = mockk()
@@ -26,21 +23,28 @@ class MoreDetailsPresenterImplTest {
 
     @Test
     fun `getArtistInfo with non-existing artist should update UI state to empty`() {
-        val expectedUiState = MoreDetailsUIState()
+        val artist = ArtistInformation.ArtistInformationEmpty
+        val artistName = "Artist empty"
+        val expectedUiState = MoreDetailsUIState(
+            "",
+            "",
+            "",
+            false
+        )
+        val uiStateTester: (MoreDetailsUIState) -> Unit = mockk(relaxed =true)
+        moreDetailsPresenter.uiStateObservable.subscribe { uiStateTester(it) }
 
-        every { artistInfoRepository.getArtistInfoByTerm("Non-existing artist") } returns null
+        every { artistInfoRepository.getArtistInfoByTerm(artistName) } returns artist
 
-        moreDetailsPresenter.getArtistInfo("Non-existing artist")
+        moreDetailsPresenter.getArtistInfo(artistName)
 
-        waitForUiThread()
-
-        assertEquals(expectedUiState, moreDetailsPresenter.uiState)
+        verify { uiStateTester(expectedUiState) }
     }
 
     @Test
     fun `getArtistInfo with existing artist should update UI state to artist information`() {
         val artistName = "Madonna"
-        val artistInfoData = ArtistInformation.ArtistInformationData(
+        val artist = ArtistInformation.ArtistInformationData(
             artistName = artistName,
             url = "https://www.madonna.com/",
             abstract = "Madonna is an American singer, songwriter, and actress.",
@@ -48,26 +52,21 @@ class MoreDetailsPresenterImplTest {
         )
         val expectedUiState = MoreDetailsUIState(
             artistName = artistName,
-            url = artistInfoData.url,
-            abstract = artistInfoData.abstract,
-            isLocallyStored = artistInfoData.isLocallyStored
+            url = artist.url,
+            abstract = artist.abstract,
+            isLocallyStored = artist.isLocallyStored
         )
 
-        every { artistInfoRepository.getArtistInfoByTerm(artistName) } returns artistInfoData
+        val uiStateTester: (MoreDetailsUIState) -> Unit = mockk(relaxed =true)
+        moreDetailsPresenter.uiStateObservable.subscribe { uiStateTester(it) }
+
+        every { artistInfoRepository.getArtistInfoByTerm(artistName) } returns artist
 
         moreDetailsPresenter.getArtistInfo(artistName)
 
-        waitForUiThread()
-
-        assertEquals(expectedUiState, moreDetailsPresenter.uiState)
-    }
-
-    private fun waitForUiThread() {
-        val latch = CountDownLatch(1)
-        uiStateObservable.subscribe {
-            latch.countDown()
-        }
-        latch.await(2, TimeUnit.SECONDS)
+        verify { uiStateTester(expectedUiState) }
     }
 }
+
+
 
