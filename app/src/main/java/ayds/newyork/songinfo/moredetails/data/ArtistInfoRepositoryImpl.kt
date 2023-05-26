@@ -2,13 +2,12 @@ package ayds.newyork.songinfo.moredetails.data
 
 import ayds.newyork.songinfo.moredetails.domain.ArtistInfoRepository
 import ayds.newyork.songinfo.moredetails.domain.ArtistInformation
-import ayds.newyork.songinfo.moredetails.data.external.ArtistInfoExternalStorage
 import ayds.newyork.songinfo.moredetails.data.local.sqldb.ArtistInfoLocalStorageImpl
 
 
 class ArtistInfoRepositoryImpl(
     private val artistInfoLocalStorage: ArtistInfoLocalStorageImpl,
-    private val artistInfoExternalStorage: ArtistInfoExternalStorage,
+    private val artistInfoExternalStorage: NYTimes,
 ) : ArtistInfoRepository {
 
     override fun getArtistInfoByTerm(name: String): ArtistInformation? {
