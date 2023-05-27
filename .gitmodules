@@ -1,6 +1,3 @@
-[submodule "libs/NYT1-module"]
-	path = libs/NYT1-module
-	url = https://github.com/agusdeba/NewYorkTimes-1-module.git
 [submodule "libs/LastFM-module"]
 	path = libs/LastFM-module
 	url = https://github.com/alvaromosconi/LastFM_API
