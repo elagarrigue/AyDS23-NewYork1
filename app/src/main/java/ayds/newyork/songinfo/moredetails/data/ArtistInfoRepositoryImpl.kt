@@ -3,9 +3,9 @@ package ayds.newyork.songinfo.moredetails.data
 import ayds.newyork.songinfo.moredetails.domain.ArtistInfoRepository
 import ayds.newyork.songinfo.moredetails.domain.ArtistInformation
 import ayds.newyork.songinfo.moredetails.data.local.sqldb.ArtistInfoLocalStorageImpl
-import com.example.nyt1_module.DependenciesInjector
-import com.example.nyt1_module.NYTArtistInfoService
-import com.example.nyt1_module.entity.ArtistInformationExternal
+import ayds.NY1.NewYorkTimes.external.DependenciesInjector
+import ayds.NY1.NewYorkTimes.external.NYTArtistInfoService
+import ayds.NY1.NewYorkTimes.external.entity.ArtistInformationExternal
 
 class ArtistInfoRepositoryImpl(
     private val artistInfoLocalStorage: ArtistInfoLocalStorageImpl,
