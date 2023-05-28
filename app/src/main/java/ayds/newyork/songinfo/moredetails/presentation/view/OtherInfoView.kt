@@ -12,7 +12,7 @@ import ayds.newyork.songinfo.R
 import ayds.newyork.songinfo.utils.UtilsInjector
 import ayds.newyork.songinfo.utils.view.ImageLoader
 import ayds.newyork.songinfo.moredetails.presentation.presenter.MoreDetailsPresenter
-import ayds.newyork.songinfo.moredetails.injector.DependenciesInjector
+import ayds.newyork.songinfo.moredetails.injector.MoreDetailsDependenciesInjector
 import ayds.newyork.songinfo.moredetails.presentation.presenter.MoreDetailsUIState
 import ayds.observer.Observer
 
@@ -41,8 +41,8 @@ class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompa
     }
 
     private fun initModule() {
-        DependenciesInjector.init(this)
-        moreDetailsPresenter = DependenciesInjector.getPresenter()
+        MoreDetailsDependenciesInjector.init(this)
+        moreDetailsPresenter = MoreDetailsDependenciesInjector.getPresenter()
     }
 
     private fun subscribeUiState() {
@@ -107,7 +107,7 @@ class OtherInfoViewActivity(private val formatterInfo: FormatterInfo) : AppCompa
 
     companion object {
         fun getArtistNameExtra(): String {
-            return DependenciesInjector.getPresenter().uiState.artistNameExtra
+            return MoreDetailsDependenciesInjector.getPresenter().uiState.artistNameExtra
         }
     }
 }

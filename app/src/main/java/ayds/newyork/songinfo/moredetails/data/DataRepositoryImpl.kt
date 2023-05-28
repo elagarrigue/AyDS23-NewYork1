@@ -9,11 +9,11 @@ import ayds.NY1.NewYorkTimes.external.entity.ArtistInformationExternal
 
 class DataRepositoryImpl(
     private val dataLocalStorage: DataLocalStorageImpl,
-    private var dataExternalStorage: NYTArtistInfoService,
-    private var data: Card?,
+    private val broker: BrokerService,
 ) : DataRepository {
+    private lateinit var data: Card
 
-    override fun getDataByTerm(name: String): Card? {
+    override fun getDataByTerm(name: String): Card {
         var dataLocal = dataLocalStorage.getData(name)
 
         when (dataLocal) {
