@@ -1,14 +1,14 @@
 package ayds.newyork.songinfo.moredetails.injector
 
 import android.content.Context
-import ayds.newyork.songinfo.moredetails.data.ArtistInfoRepositoryImpl
+import ayds.newyork.songinfo.moredetails.data.DataRepositoryImpl
 import ayds.newyork.songinfo.moredetails.data.external.ArtistInfoExternalStorageImpl
 import ayds.newyork.songinfo.moredetails.data.external.info.JsonToArtistInfoResolver
 import ayds.newyork.songinfo.moredetails.data.external.info.NYTArtistInfoServiceImpl
 import ayds.newyork.songinfo.moredetails.data.external.info.NYTimesAPI
-import ayds.newyork.songinfo.moredetails.data.local.sqldb.ArtistInfoLocalStorageImpl
+import ayds.newyork.songinfo.moredetails.data.local.sqldb.DataLocalStorageImpl
 import ayds.newyork.songinfo.moredetails.data.local.sqldb.CursorToArtistInfoMapperImpl
-import ayds.newyork.songinfo.moredetails.domain.ArtistInfoRepository
+import ayds.newyork.songinfo.moredetails.domain.DataRepository
 import ayds.newyork.songinfo.moredetails.presentation.presenter.MoreDetailsPresenter
 import ayds.newyork.songinfo.moredetails.presentation.presenter.MoreDetailsPresenterImpl
 import ayds.newyork.songinfo.moredetails.presentation.view.FormatterInfo
@@ -22,7 +22,7 @@ object DependenciesInjector {
     val otherInfo: OtherInfoViewActivity = OtherInfoViewActivity(formatterInfo = FormatterInfo(""))
 
     fun init(otherInfoView: OtherInfoViewActivity) {
-        val artistInfoLocalStorage = ArtistInfoLocalStorageImpl(
+        val artistInfoLocalStorage = DataLocalStorageImpl(
             otherInfoView as Context,
             cursorToArtistInfoMapper = CursorToArtistInfoMapperImpl()
         )
@@ -34,9 +34,9 @@ object DependenciesInjector {
         val newYorkTimesAPI: NYTimesAPI = newYorkTimesRetrofit.create(NYTimesAPI::class.java)
         val nyToArtistInfoService = NYTArtistInfoServiceImpl(nyToArtisInfoResolver, newYorkTimesAPI)
         val artistInfoExternalStorage = ArtistInfoExternalStorageImpl(nyToArtistInfoService)
-        val artistInfoRepository: ArtistInfoRepository =
-            ArtistInfoRepositoryImpl(artistInfoLocalStorage, artistInfoExternalStorage)
-        moreDetailsPresenter = MoreDetailsPresenterImpl(artistInfoRepository)
+        val dataRepository: DataRepository =
+            DataRepositoryImpl(artistInfoLocalStorage, artistInfoExternalStorage)
+        moreDetailsPresenter = MoreDetailsPresenterImpl(dataRepository)
     }
 
     fun getPresenter(): MoreDetailsPresenter = moreDetailsPresenter

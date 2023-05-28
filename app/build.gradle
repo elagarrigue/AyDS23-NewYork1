@@ -59,4 +59,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.9'
 
     implementation project(':nyt1_module')
+    implementation project(':lastfm-module')
+    implementation project(':wikipedia_module')
 }

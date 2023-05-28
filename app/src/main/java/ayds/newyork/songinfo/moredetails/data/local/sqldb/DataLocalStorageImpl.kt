@@ -5,15 +5,16 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import ayds.newyork.songinfo.moredetails.domain.ArtistInformation
-import ayds.newyork.songinfo.moredetails.data.local.ArtistInfoLocalStorage
+import ayds.newyork.songinfo.moredetails.domain.Card
+import ayds.newyork.songinfo.moredetails.data.local.DataLocalStorage
+import ayds.newyork.songinfo.moredetails.domain.Source
 
 
-class ArtistInfoLocalStorageImpl(
+class DataLocalStorageImpl(
     context: Context,
     private val cursorToArtistInfoMapper: CursorToArtistInfoMapper,
 ) :
-    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), ArtistInfoLocalStorage {
+    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), DataLocalStorage {
 
     override fun onCreate(database: SQLiteDatabase) {
         database.execSQL(CREATE_TABLE_QUERY)
@@ -25,20 +26,20 @@ class ArtistInfoLocalStorageImpl(
         onUpgrade(db, oldVersion, newVersion)
     }
 
-    override fun saveArtistInfo(artistInfo: ArtistInformation.ArtistInformationData) {
-        this.writableDatabase.insert(TABLE_NAME, null, getValues(artistInfo))
+    override fun saveData(data: Card.DataCard) {
+        this.writableDatabase.insert(TABLE_NAME, null, getValues(data))
         this.writableDatabase.close()
     }
 
-    override fun getArtistInfo(artist: String): ArtistInformation? {
+    override fun getData(data: String): Card? {
         val columns = arrayOf(
             COLUMN_ID,
-            COLUMN_NAME,
-            COLUMN_INFO,
-            COLUMN_URL
+            COLUMN_DESCRIPTION,
+            COLUMN_INFO_URL,
+            COLUMN_SOURCE_URL
         )
         val cursor =
-            getCursor(TABLE_NAME, columns, WHERE, arrayOf(artist), null, null, SORT_ORDER)
+            getCursor(TABLE_NAME, columns, WHERE, arrayOf(data), null, null, SORT_ORDER)
         return cursorToArtistInfoMapper.map(cursor)
     }
 
@@ -62,13 +63,21 @@ class ArtistInfoLocalStorageImpl(
         )
     }
 
-    private fun getValues(artistInfo: ArtistInformation.ArtistInformationData): ContentValues =
+    private fun getValues(data: Card.DataCard): ContentValues =
         ContentValues().apply {
-            put(COLUMN_NAME, artistInfo.artistName)
-            put(COLUMN_INFO, artistInfo.abstract)
-            put(COLUMN_SOURCE, 1)
-            put(COLUMN_URL, artistInfo.url)
+            put(COLUMN_DESCRIPTION, data.description)
+            put(COLUMN_INFO_URL, data.infoUrl)
+            put(COLUMN_SOURCE, getSourceValue(data.source))
+            put(COLUMN_SOURCE_URL, data.sourceLogoUrl)
         }
 
+    private fun getSourceValue(source: Source): String {
+        return when (source) {
+            Source.LAST_FM -> "LastFM"
+            Source.WIKIPEDIA -> "Wikipedia"
+            Source.NEW_YORK_TIMES -> "New York Times"
+            Source.UNKNOWN -> "Unknown"
+        }
+    }
 
 }

@@ -1,7 +1,7 @@
 package ayds.newyork.songinfo.moredetails.presentation.presenter
 
-import ayds.newyork.songinfo.moredetails.domain.ArtistInfoRepository
-import ayds.newyork.songinfo.moredetails.domain.ArtistInformation
+import ayds.newyork.songinfo.moredetails.domain.DataRepository
+import ayds.newyork.songinfo.moredetails.domain.Card
 import ayds.observer.Observable
 import io.mockk.every
 import io.mockk.mockk
@@ -12,18 +12,18 @@ import org.junit.Test
 class MoreDetailsPresenterImplTest {
 
     private lateinit var moreDetailsPresenter: MoreDetailsPresenter
-    private lateinit var artistInfoRepository: ArtistInfoRepository
+    private lateinit var dataRepository: DataRepository
     private lateinit var uiStateObservable: Observable<MoreDetailsUIState>
     @Before
     fun setUp() {
-        artistInfoRepository = mockk()
-        moreDetailsPresenter = MoreDetailsPresenterImpl(artistInfoRepository)
+        dataRepository = mockk()
+        moreDetailsPresenter = MoreDetailsPresenterImpl(dataRepository)
         uiStateObservable = moreDetailsPresenter.uiStateObservable
     }
 
     @Test
     fun `getArtistInfo with non-existing artist should update UI state to empty`() {
-        val artist = ArtistInformation.ArtistInformationEmpty
+        val artist = Card.CardEmpty
         val artistName = "Artist empty"
         val expectedUiState = MoreDetailsUIState(
             "",
@@ -34,7 +34,7 @@ class MoreDetailsPresenterImplTest {
         val uiStateTester: (MoreDetailsUIState) -> Unit = mockk(relaxed =true)
         moreDetailsPresenter.uiStateObservable.subscribe { uiStateTester(it) }
 
-        every { artistInfoRepository.getArtistInfoByTerm(artistName) } returns artist
+        every { dataRepository.getArtistInfoByTerm(artistName) } returns artist
 
         moreDetailsPresenter.getArtistInfo(artistName)
 
@@ -44,7 +44,7 @@ class MoreDetailsPresenterImplTest {
     @Test
     fun `getArtistInfo with existing artist should update UI state to artist information`() {
         val artistName = "Madonna"
-        val artist = ArtistInformation.ArtistInformationData(
+        val artist = Card.CardData(
             artistName = artistName,
             url = "https://www.madonna.com/",
             abstract = "Madonna is an American singer, songwriter, and actress.",
@@ -60,7 +60,7 @@ class MoreDetailsPresenterImplTest {
         val uiStateTester: (MoreDetailsUIState) -> Unit = mockk(relaxed =true)
         moreDetailsPresenter.uiStateObservable.subscribe { uiStateTester(it) }
 
-        every { artistInfoRepository.getArtistInfoByTerm(artistName) } returns artist
+        every { dataRepository.getArtistInfoByTerm(artistName) } returns artist
 
         moreDetailsPresenter.getArtistInfo(artistName)
 

@@ -1,7 +1,7 @@
 package ayds.newyork.songinfo.moredetails.presentation.presenter
 
-import ayds.newyork.songinfo.moredetails.domain.ArtistInfoRepository
-import ayds.newyork.songinfo.moredetails.domain.ArtistInformation
+import ayds.newyork.songinfo.moredetails.domain.DataRepository
+import ayds.newyork.songinfo.moredetails.domain.Card
 import ayds.observer.Subject
 import ayds.observer.Observable
 
@@ -11,25 +11,25 @@ interface MoreDetailsPresenter {
     fun getArtistInfo(artistName: String)
 }
 
-internal class MoreDetailsPresenterImpl(private val artistInfoRepository: ArtistInfoRepository) : MoreDetailsPresenter {
+internal class MoreDetailsPresenterImpl(private val dataRepository: DataRepository) : MoreDetailsPresenter {
     private val onUIStateSubject = Subject<MoreDetailsUIState>()
     override val uiStateObservable = onUIStateSubject
     override var uiState: MoreDetailsUIState = MoreDetailsUIState()
 
     override fun getArtistInfo(artistName: String) = Thread {
-        var artistInfo = artistInfoRepository.getArtistInfoByTerm(artistName)
+        var artistInfo = dataRepository.getArtistInfoByTerm(artistName)
         updateUiState(artistInfo)
     }.start()
 
-    private fun updateUiState(artistInfo: ArtistInformation?) {
+    private fun updateUiState(artistInfo: Card?) {
         when (artistInfo) {
-            is ArtistInformation.ArtistInformationData -> updateArtistInfoUiState(artistInfo)
-            ArtistInformation.ArtistInformationEmpty -> updateNoResultsUiState()
+            is Card.CardData -> updateArtistInfoUiState(artistInfo)
+            Card.CardEmpty -> updateNoResultsUiState()
         }
         uiStateObservable.notify(uiState)
     }
 
-    private fun updateArtistInfoUiState(artistInfoData: ArtistInformation.ArtistInformationData) {
+    private fun updateArtistInfoUiState(artistInfoData: Card.CardData) {
         uiState = uiState.copy(
             artistName = artistInfoData.artistName,
             url = artistInfoData.url,
