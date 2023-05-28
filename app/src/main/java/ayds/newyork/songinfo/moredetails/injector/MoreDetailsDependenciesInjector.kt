@@ -1,7 +1,6 @@
 package ayds.newyork.songinfo.moredetails.injector
 
 import android.content.Context
-import ayds.NY1.NewYorkTimes.external.DependenciesInjector
 import ayds.newyork.songinfo.moredetails.data.DataRepositoryImpl
 import ayds.newyork.songinfo.moredetails.data.local.sqldb.DataLocalStorageImpl
 import ayds.newyork.songinfo.moredetails.data.local.sqldb.CursorToArtistInfoMapperImpl

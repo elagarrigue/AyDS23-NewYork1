@@ -13,5 +13,5 @@ interface DataLocalStorage {
 
     fun saveData(data: Card.DataCard)
 
-    fun getData(data: String): Card?
+    fun getData(data: String): MutableList<Card>
 }

@@ -31,7 +31,7 @@ class DataLocalStorageImpl(
         this.writableDatabase.close()
     }
 
-    override fun getData(data: String): Card? {
+    override fun getData(data: String): MutableList<Card> {
         val columns = arrayOf(
             COLUMN_ID,
             COLUMN_DESCRIPTION,
