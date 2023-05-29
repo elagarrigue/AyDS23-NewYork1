@@ -5,12 +5,14 @@ sealed class Card {
     abstract val infoUrl: String?
     abstract val source: Source
     abstract val sourceLogoUrl: String?
+    abstract var isLocallyStored: Boolean
 
     data class DataCard(
         override val description: String?,
         override val infoUrl: String?,
         override val source: Source,
-        override val sourceLogoUrl: String?
+        override val sourceLogoUrl: String?,
+        override var isLocallyStored: Boolean = false
     ) : Card()
 
     object EmptyCard : Card() {
@@ -18,6 +20,7 @@ sealed class Card {
         override val infoUrl: String? = null
         override val source: Source = Source.UNKNOWN
         override val sourceLogoUrl: String? = null
+        override var isLocallyStored: Boolean = false
     }
 }
 

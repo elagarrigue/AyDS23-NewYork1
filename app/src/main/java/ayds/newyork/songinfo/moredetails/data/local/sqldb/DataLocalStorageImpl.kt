@@ -36,6 +36,7 @@ class DataLocalStorageImpl(
             COLUMN_ID,
             COLUMN_DESCRIPTION,
             COLUMN_INFO_URL,
+            COLUMN_SOURCE,
             COLUMN_SOURCE_URL
         )
         val cursor =
