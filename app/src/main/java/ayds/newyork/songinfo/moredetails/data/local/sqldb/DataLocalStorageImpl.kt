@@ -26,9 +26,15 @@ class DataLocalStorageImpl(
         onUpgrade(db, oldVersion, newVersion)
     }
 
-    override fun saveData(data: Card.DataCard) {
-        this.writableDatabase.insert(TABLE_NAME, null, getValues(data))
-        this.writableDatabase.close()
+    override fun saveData(data: MutableList<Card>) {
+        val database = this.writableDatabase
+        database.use { database ->
+            for (card in data) {
+                if (card is Card.DataCard) {
+                    database.insert(TABLE_NAME, null, getValues(card))
+                }
+            }
+        }
     }
 
     override fun getData(data: String): MutableList<Card> {
@@ -64,7 +70,7 @@ class DataLocalStorageImpl(
         )
     }
 
-    private fun getValues(data: Card.DataCard): ContentValues =
+    private fun getValues(data: Card): ContentValues =
         ContentValues().apply {
             put(COLUMN_DESCRIPTION, data.description)
             put(COLUMN_INFO_URL, data.infoUrl)
@@ -80,5 +86,4 @@ class DataLocalStorageImpl(
             Source.UNKNOWN -> "Unknown"
         }
     }
-
 }

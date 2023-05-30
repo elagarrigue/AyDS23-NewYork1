@@ -6,17 +6,30 @@ import ayds.newyork.songinfo.moredetails.domain.Source
 
 
 interface CursorToArtistInfoMapper {
-    fun map(cursor: Cursor): Card?
+    fun map(cursor: Cursor): MutableList<Card>
 }
 
 internal class CursorToArtistInfoMapperImpl : CursorToArtistInfoMapper {
-    override fun map(cursor: Cursor): Card? {
-        return if (cursor.moveToFirst()) {
-            val artist = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION))
-            val info = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_INFO_URL))
+    override fun map(cursor: Cursor): MutableList<Card> {
+        val cardList = mutableListOf<Card>()
+        var sourceCard: Source = Source.UNKNOWN
+        while (cursor.moveToNext()) {
+            val description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION))
+            val infoUrl = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_INFO_URL))
             val sourceLogo = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SOURCE_URL))
-            Card.DataCard(artist, info, Source.UNKNOWN, sourceLogo)
-        } else Card.EmptyCard
-
+            val source = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SOURCE))
+            when (source) {
+                "LAST_FM" -> sourceCard = Source.LAST_FM
+                "WIKIPEDIA" -> sourceCard = Source.WIKIPEDIA
+                "NEW_YORK_TIMES" -> sourceCard = Source.NEW_YORK_TIMES
+            }
+            val card = Card.DataCard(description, infoUrl, sourceCard, sourceLogo)
+            cardList.add(card)
+        }
+        if (cardList.isEmpty()) {
+            cardList.add(Card.EmptyCard)
+        }
+        return cardList
     }
+
 }

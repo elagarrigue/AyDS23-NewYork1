@@ -2,7 +2,7 @@ package ayds.newyork.songinfo.moredetails.data
 
 import ayds.newyork.songinfo.moredetails.domain.Card
 import ayds.NY1.NewYorkTimes.external.DependenciesInjector
-import ayds.NY1.NewYorkTimes.external.info.NYTArtistInfoServiceImpl
+import ayds.NY1.NewYorkTimes.external.NYTArtistInfoService
 import ayds.NY1.NewYorkTimes.external.entity.ArtistInformationExternal
 import ayds.newyork.songinfo.moredetails.domain.Source
 import lisboa4LastFM.LastFMInjector
@@ -19,7 +19,7 @@ interface BrokerService {
 }
 
 internal class BrokerServiceImpl(): BrokerService{
-    private lateinit var artistInfoProvider: NYTArtistInfoServiceImpl
+    private lateinit var artistInfoProvider: NYTArtistInfoService
     private lateinit var biographyProvider: LastFMService
     private lateinit var articlesProvider: WikipediaArticleService
 
