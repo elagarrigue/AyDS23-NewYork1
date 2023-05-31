@@ -19,7 +19,6 @@ internal class MoreDetailsPresenterImpl(private val dataRepository: DataReposito
     private lateinit var dataArtistCards: MutableList<Card>
     override fun getDataArtist(artistName: String) = Thread {
         dataArtistCards = dataRepository.getDataByTerm(artistName)
-
         updateUiState(dataArtistCards)
     }.start()
 
