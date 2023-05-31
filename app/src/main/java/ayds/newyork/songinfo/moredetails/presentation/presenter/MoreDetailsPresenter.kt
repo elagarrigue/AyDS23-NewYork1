@@ -8,42 +8,26 @@ import ayds.observer.Observable
 interface MoreDetailsPresenter {
     val uiStateObservable: Observable<MoreDetailsUIState>
     var uiState: MoreDetailsUIState
-    fun getArtistInfo(artistName: String)
+    fun getDataArtist(artistName: String)
 }
+
 
 internal class MoreDetailsPresenterImpl(private val dataRepository: DataRepository) : MoreDetailsPresenter {
     private val onUIStateSubject = Subject<MoreDetailsUIState>()
     override val uiStateObservable = onUIStateSubject
     override var uiState: MoreDetailsUIState = MoreDetailsUIState()
+    private lateinit var dataArtistCards: MutableList<Card>
+    override fun getDataArtist(artistName: String) = Thread {
+        dataArtistCards = dataRepository.getDataByTerm(artistName)
 
-    override fun getArtistInfo(artistName: String) = Thread {
-        var artistInfo = dataRepository.getArtistInfoByTerm(artistName)
-        updateUiState(artistInfo)
+        updateUiState(dataArtistCards)
     }.start()
 
-    private fun updateUiState(artistInfo: Card?) {
-        when (artistInfo) {
-            is Card.CardData -> updateArtistInfoUiState(artistInfo)
-            Card.CardEmpty -> updateNoResultsUiState()
+    private fun updateUiState(data: MutableList<Card>) {
+        uiState.dataCards.clear()
+        for (card in data) {
+            uiState.dataCards.add(card)
         }
         uiStateObservable.notify(uiState)
-    }
-
-    private fun updateArtistInfoUiState(artistInfoData: Card.CardData) {
-        uiState = uiState.copy(
-            artistName = artistInfoData.artistName,
-            url = artistInfoData.url,
-            abstract = artistInfoData.abstract,
-            isLocallyStored = artistInfoData.isLocallyStored
-        )
-    }
-
-    private fun updateNoResultsUiState() {
-        uiState = uiState.copy(
-            artistName = "",
-            url = "",
-            abstract = "",
-            isLocallyStored = false
-        )
     }
 }

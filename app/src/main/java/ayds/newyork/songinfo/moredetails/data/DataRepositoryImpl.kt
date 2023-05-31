@@ -17,14 +17,7 @@ class DataRepositoryImpl(
             data = dataLocal
         } else {
             try {
-                val artistInfo = broker.requestNYT(name)
-                val biography = broker.requestWikipedia(name)
-                val article = broker.requestLastFM(name)
-                data.apply {
-                    add(artistInfo)
-                    add(article)
-                    add(biography)
-                }
+                data = broker.requestToProxys(name)
                 dataLocalStorage.saveData(data)
             } catch (e: Exception) {
                 data = mutableListOf(Card.EmptyCard)
@@ -35,7 +28,9 @@ class DataRepositoryImpl(
 
     private fun markDataAsLocal(data: MutableList<Card>) {
         for (card in data) {
-            card.isLocallyStored = true
+            if(card is Card.DataCard) {
+                card.isLocallyStored = true
+            }
         }
     }
 }

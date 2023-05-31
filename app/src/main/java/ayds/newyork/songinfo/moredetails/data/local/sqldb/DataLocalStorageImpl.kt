@@ -70,7 +70,7 @@ class DataLocalStorageImpl(
         )
     }
 
-    private fun getValues(data: Card): ContentValues =
+    private fun getValues(data: Card.DataCard): ContentValues =
         ContentValues().apply {
             put(COLUMN_DESCRIPTION, data.description)
             put(COLUMN_INFO_URL, data.infoUrl)
