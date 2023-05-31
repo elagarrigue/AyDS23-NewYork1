@@ -74,7 +74,7 @@ class HomeViewActivity : AppCompatActivity(), HomeView {
         modeDetailsButton = findViewById(R.id.modeDetailsButton)
         openSongButton = findViewById(R.id.openSongButton)
         termEditText = findViewById(R.id.termEditText)
-        descriptionTextView = findViewById(R.id.descriptionTextView)
+        descriptionTextView = findViewById(R.id.description)
         posterImageView = findViewById(R.id.posterImageView)
     }
     private fun initListeners() {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -12,7 +12,7 @@
         android:scaleType="fitCenter" />
 
     <TextView
-        android:id="@+id/sourceLabelTextView"
+        android:id="@+id/source"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -20,10 +20,16 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/sourceTextView"
+        android:id="@+id/sourceURL"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" />
 
     <Button
         android:id="@+id/openUrlButton"
@@ -32,4 +38,4 @@
         android:layout_marginTop="8dp"
         android:text="View Full Article" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
