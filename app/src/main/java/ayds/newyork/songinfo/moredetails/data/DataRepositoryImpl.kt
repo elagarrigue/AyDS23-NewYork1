@@ -18,7 +18,7 @@ class DataRepositoryImpl(
         } else {
             try {
                 data = broker.requestToProxys(name)
-                dataLocalStorage.saveData(data)
+                dataLocalStorage.saveData(data, name)
             } catch (e: Exception) {
                 data = mutableListOf(Card.EmptyCard)
             }

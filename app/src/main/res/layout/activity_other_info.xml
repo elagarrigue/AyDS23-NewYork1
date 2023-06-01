@@ -7,7 +7,7 @@
     android:paddingRight="16dp"
     android:paddingTop="16dp"
     android:paddingBottom="16dp"
-    tools:context="ayds.newyork.songinfo.moredetails.presentation.view.OtherInfoView">
+    tools:context="ayds.newyork.songinfo.moredetails.presentation.view.OtherInfoViewActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cardsRecyclerView"

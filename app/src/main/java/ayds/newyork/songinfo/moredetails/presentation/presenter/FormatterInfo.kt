@@ -1,24 +1,25 @@
-package ayds.newyork.songinfo.moredetails.presentation.view
+package ayds.newyork.songinfo.moredetails.presentation.presenter
 
+import ayds.newyork.songinfo.moredetails.presentation.view.*
 import java.util.*
 
 class FormatterInfo(var artistName: String) {
-    fun buildArtistInfoAbstract(
+    fun buildCardDescription(
+        description: String,
         artistName: String,
-        abstract: String?,
         isLocalStored: Boolean
     ): String {
         this.artistName = artistName
-        return if (abstract.isNullOrBlank() || !isLocalStored) {
+        return if (description.isNullOrBlank() || !isLocalStored) {
             NO_RESULTS
         } else {
-            val text = "$PREFIX $abstract"
-            getFormattedTextFromAbstract(text)
+            val text = "$PREFIX $description"
+            getFormattedTextFromDescription(text)
         }
     }
 
-    private fun getFormattedTextFromAbstract(abstract: String): String {
-        val text = abstract.replace(ENTER_LINE_ESCAPE_SEQ, ENTER_LINE)
+    private fun getFormattedTextFromDescription(description: String): String {
+        val text = description.replace(ENTER_LINE_ESCAPE_SEQ, ENTER_LINE)
         val textFormatted = replaceText(text)
         return textToHtml(textFormatted)
     }

@@ -26,6 +26,7 @@ internal class CursorToArtistInfoMapperImpl : CursorToArtistInfoMapper {
             val card = Card.DataCard(description, infoUrl, sourceCard, sourceLogo)
             cardList.add(card)
         }
+        cursor.close()
         if (cardList.isEmpty()) {
             cardList.add(Card.EmptyCard)
         }

@@ -10,12 +10,12 @@ import ayds.newyork.songinfo.moredetails.injector.MoreDetailsDependenciesInjecto
 import ayds.newyork.songinfo.moredetails.presentation.presenter.MoreDetailsUIState
 import ayds.observer.Observer
 
-class OtherInfoViewActivity(/*private val formatterInfo: FormatterInfo*/) : AppCompatActivity() {
+private var artistName: String? = null
+class OtherInfoViewActivity() : AppCompatActivity() {
 
     private lateinit var cardsRecyclerView: RecyclerView
     private lateinit var cardsAdapter: CardsAdapter
     private lateinit var moreDetailsPresenter: MoreDetailsPresenter
-    private var artistName: String? = null
 
     private val observer: Observer<MoreDetailsUIState> =
         Observer { value ->
@@ -31,6 +31,7 @@ class OtherInfoViewActivity(/*private val formatterInfo: FormatterInfo*/) : AppC
         subscribeUiState()
         getDataInfo()
     }
+
     private fun initModule() {
         MoreDetailsDependenciesInjector.init(this)
         moreDetailsPresenter = MoreDetailsDependenciesInjector.getPresenter()
@@ -61,5 +62,9 @@ class OtherInfoViewActivity(/*private val formatterInfo: FormatterInfo*/) : AppC
             cardsAdapter.setCards(uiState.dataCards)
         }
     }
-
+    companion object {
+        public fun getArtistNameExtra(): String? {
+            return artistName
+        }
+    }
 }

@@ -13,11 +13,11 @@ import ayds.newyork.songinfo.moredetails.data.Proxy
 import ayds.newyork.songinfo.moredetails.data.proxy.NYTProxyImpl
 import ayds.newyork.songinfo.moredetails.data.proxy.WikipediaProxyImpl
 import ayds.newyork.songinfo.moredetails.data.proxy.LastFMProxyImpl
-import ayds.newyork.songinfo.moredetails.presentation.view.FormatterInfo
+import ayds.newyork.songinfo.moredetails.presentation.presenter.FormatterInfo
 
 object MoreDetailsDependenciesInjector {
-    /*private const val NYTIMES_URL = "https://api.nytimes.com/svc/search/v2/"
-    val otherInfo: OtherInfoViewActivity = OtherInfoViewActivity(formatterInfo = FormatterInfo(""))*/
+
+    val otherInfo: OtherInfoViewActivity = OtherInfoViewActivity()
     private lateinit var moreDetailsPresenter: MoreDetailsPresenter
     private lateinit var broker: BrokerServiceImpl
     private var proxys: MutableList<Proxy> = mutableListOf()
@@ -31,7 +31,8 @@ object MoreDetailsDependenciesInjector {
         proxys.add(WikipediaProxyImpl())
         broker = BrokerServiceImpl(proxys)
         val dataRepository: DataRepository = DataRepositoryImpl(artistInfoLocalStorage, broker)
-        moreDetailsPresenter = MoreDetailsPresenterImpl(dataRepository)
+        val formatterInfo = FormatterInfo("")
+        moreDetailsPresenter = MoreDetailsPresenterImpl(dataRepository,formatterInfo)
     }
 
     fun getPresenter(): MoreDetailsPresenter = moreDetailsPresenter

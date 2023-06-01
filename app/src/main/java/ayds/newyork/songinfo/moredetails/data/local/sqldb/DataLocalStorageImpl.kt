@@ -20,18 +20,21 @@ class DataLocalStorageImpl(
         database.execSQL(CREATE_TABLE_QUERY)
     }
 
-    override fun onUpgrade(database: SQLiteDatabase, oldVersion: Int, newVersion: Int) {}
+    override fun onUpgrade(database: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        database.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
+        onCreate(database)
+    }
 
     override fun onDowngrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         onUpgrade(db, oldVersion, newVersion)
     }
 
-    override fun saveData(data: MutableList<Card>) {
+    override fun saveData(data: MutableList<Card>, artistName: String) {
         val database = this.writableDatabase
         database.use { database ->
             for (card in data) {
                 if (card is Card.DataCard) {
-                    database.insert(TABLE_NAME, null, getValues(card))
+                    database.insert(TABLE_NAME, null, getValues(card, artistName))
                 }
             }
         }
@@ -40,6 +43,7 @@ class DataLocalStorageImpl(
     override fun getData(data: String): MutableList<Card> {
         val columns = arrayOf(
             COLUMN_ID,
+            COLUMN_ARTIST_NAME,
             COLUMN_DESCRIPTION,
             COLUMN_INFO_URL,
             COLUMN_SOURCE,
@@ -70,8 +74,9 @@ class DataLocalStorageImpl(
         )
     }
 
-    private fun getValues(data: Card.DataCard): ContentValues =
+    private fun getValues(data: Card.DataCard, artistName: String): ContentValues =
         ContentValues().apply {
+            put(COLUMN_ARTIST_NAME, artistName)
             put(COLUMN_DESCRIPTION, data.description)
             put(COLUMN_INFO_URL, data.infoUrl)
             put(COLUMN_SOURCE, getSourceValue(data.source))
@@ -86,4 +91,5 @@ class DataLocalStorageImpl(
             Source.UNKNOWN -> "Unknown"
         }
     }
+
 }
