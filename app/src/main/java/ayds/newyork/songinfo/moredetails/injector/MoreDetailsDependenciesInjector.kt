@@ -20,19 +20,20 @@ object MoreDetailsDependenciesInjector {
     val otherInfo: OtherInfoViewActivity = OtherInfoViewActivity()
     private lateinit var moreDetailsPresenter: MoreDetailsPresenter
     private lateinit var broker: BrokerServiceImpl
-    private var proxys: MutableList<Proxy> = mutableListOf()
+
     fun init(otherInfoView: OtherInfoViewActivity) {
         val artistInfoLocalStorage = DataLocalStorageImpl(
             otherInfoView as Context,
             cursorToArtistInfoMapper = CursorToArtistInfoMapperImpl()
         )
+        var proxys: MutableList<Proxy> = mutableListOf()
         proxys.add(NYTProxyImpl())
         proxys.add(LastFMProxyImpl())
         proxys.add(WikipediaProxyImpl())
         broker = BrokerServiceImpl(proxys)
         val dataRepository: DataRepository = DataRepositoryImpl(artistInfoLocalStorage, broker)
         val formatterInfo = FormatterInfo("")
-        moreDetailsPresenter = MoreDetailsPresenterImpl(dataRepository,formatterInfo)
+        moreDetailsPresenter = MoreDetailsPresenterImpl(dataRepository, formatterInfo)
     }
 
     fun getPresenter(): MoreDetailsPresenter = moreDetailsPresenter

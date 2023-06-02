@@ -6,7 +6,7 @@ import ayds.newyork.songinfo.moredetails.domain.Source
 import wikipedia.external.external.WikipediaInjector
 import wikipedia.external.external.entities.WikipediaArtist
 
-class WikipediaProxyImpl :Proxy{
+class WikipediaProxyImpl : Proxy {
     override fun request(artistName: String): Card {
         val articlesProvider = WikipediaInjector.generateWikipediaService()
         val dataArtist: WikipediaArtist = articlesProvider.getArtist(artistName)
@@ -14,14 +14,15 @@ class WikipediaProxyImpl :Proxy{
     }
 
     private fun becomeToCard(dataArtist: WikipediaArtist): Card {
-        if(dataArtist != null){
-            return Card.DataCard(dataArtist.artistInfo,
+        if (dataArtist != null) {
+            return Card.DataCard(
+                dataArtist.artistInfo,
                 dataArtist.wikipediaUrl,
                 Source.WIKIPEDIA,
                 "https://upload.wikimedia.org/wikipedia/commons/8/80/Wikipedia-logo-v2.svg",
                 dataArtist.isInDataBase
             )
-        }else{
+        } else {
             return Card.EmptyCard
         }
     }

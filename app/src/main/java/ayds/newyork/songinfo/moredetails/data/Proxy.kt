@@ -4,6 +4,6 @@ import ayds.newyork.songinfo.moredetails.domain.Card
 
 interface Proxy {
 
-    fun request(artistName: String) : Card
+    fun request(artistName: String): Card
 
 }

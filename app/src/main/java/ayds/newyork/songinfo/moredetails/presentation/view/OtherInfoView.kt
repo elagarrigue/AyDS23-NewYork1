@@ -11,6 +11,7 @@ import ayds.newyork.songinfo.moredetails.presentation.presenter.MoreDetailsUISta
 import ayds.observer.Observer
 
 private var artistName: String? = null
+
 class OtherInfoViewActivity() : AppCompatActivity() {
 
     private lateinit var cardsRecyclerView: RecyclerView
@@ -47,6 +48,7 @@ class OtherInfoViewActivity() : AppCompatActivity() {
         cardsRecyclerView.layoutManager = LinearLayoutManager(this)
         cardsRecyclerView.adapter = cardsAdapter
     }
+
     private fun initArtistName() {
         artistName = intent.getStringExtra(artistName)
     }
@@ -62,6 +64,7 @@ class OtherInfoViewActivity() : AppCompatActivity() {
             cardsAdapter.setCards(uiState.dataCards)
         }
     }
+
     companion object {
         public fun getArtistNameExtra(): String? {
             return artistName

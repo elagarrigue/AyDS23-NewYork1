@@ -29,7 +29,11 @@ internal class MoreDetailsPresenterImpl(
         for (card in data) {
             if (card is Card.DataCard) {
                 val descriptionFormatted =
-                    formatterInfo.buildCardDescription(card.description, artistName, card.isLocallyStored)
+                    formatterInfo.buildCardDescription(
+                        card.description,
+                        artistName,
+                        card.isLocallyStored
+                    )
                 card.copy(
                     descriptionFormatted,
                     card.infoUrl,

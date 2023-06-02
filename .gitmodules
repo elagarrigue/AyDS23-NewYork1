@@ -5,3 +5,6 @@
 	path = libs/Wikipedia-module
 	url = https://github.com/MateChola/AyDS-Winchester1-Wikipedia
 
+[submodule "libs/NYT1-module"]
+	path = libs/NYT1-module
+	url = https://github.com/agusdeba/NewYorkTimes-1-module

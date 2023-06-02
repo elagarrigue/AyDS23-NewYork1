@@ -27,7 +27,10 @@ class FormatterInfo(var artistName: String) {
     private fun replaceText(text: String): String {
         val textWithEnterLines = text.replace(ENTER_LINE, HTML_BREAK)
         val termUpperCase = artistName.uppercase(Locale.getDefault())
-        return textWithEnterLines.replace("(?i)$artistName".toRegex(), "$HTML_BOLD$termUpperCase$HTML_BOLD_CLOSE")
+        return textWithEnterLines.replace(
+            "(?i)$artistName".toRegex(),
+            "$HTML_BOLD$termUpperCase$HTML_BOLD_CLOSE"
+        )
     }
 
     private fun textToHtml(text: String): String {

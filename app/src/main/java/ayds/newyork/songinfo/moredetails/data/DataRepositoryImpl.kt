@@ -28,7 +28,7 @@ class DataRepositoryImpl(
 
     private fun markDataAsLocal(data: MutableList<Card>) {
         for (card in data) {
-            if(card is Card.DataCard) {
+            if (card is Card.DataCard) {
                 card.isLocallyStored = true
             }
         }

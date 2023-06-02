@@ -9,6 +9,7 @@ sealed class Card {
         val sourceLogoUrl: String,
         var isLocallyStored: Boolean = false
     ) : Card()
+
     object EmptyCard : Card()
 }
 

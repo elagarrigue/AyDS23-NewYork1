@@ -15,15 +15,15 @@ class NYTProxyImpl : Proxy {
     }
 
     private fun becomeToCard(dataInfo: ArtistInformationExternal?): Card {
-        if(dataInfo is ArtistInformationExternal.ArtistInformationDataExternal) {
+        if (dataInfo is ArtistInformationExternal.ArtistInformationDataExternal) {
             return Card.DataCard(
                 dataInfo.artistName,
                 dataInfo.url,
                 Source.NEW_YORK_TIMES,
-                "https://es.wikipedia.org/wiki/Archivo:The_New_York_Times_Logo.svg#/media/Archivo:NewYorkTimes.svg",
+                dataInfo.logoUrl,
                 dataInfo.isLocallyStored
             )
-        }else {
+        } else {
             return Card.EmptyCard
         }
     }

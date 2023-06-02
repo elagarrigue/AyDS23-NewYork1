@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import ayds.newyork.songinfo.R
 import ayds.newyork.songinfo.moredetails.domain.Card
@@ -21,9 +22,10 @@ class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bind(card: Card) {
         if (card is Card.DataCard) {
             Picasso.get().load(card.sourceLogoUrl).into(imageView)
-            source.text = "Source: "
-            description.text = card.description
-            sourceURL.text = card.source.toString()
+            source.text = "Source: " + card.source.toString()
+            description.text =
+                HtmlCompat.fromHtml(card.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            sourceURL.text = "URL: " + card.infoUrl
             openUrlButton.setOnClickListener {
                 openExternalUrl(card.infoUrl)
             }

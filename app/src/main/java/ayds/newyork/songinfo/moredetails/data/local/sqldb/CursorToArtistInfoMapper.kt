@@ -27,9 +27,6 @@ internal class CursorToArtistInfoMapperImpl : CursorToArtistInfoMapper {
             cardList.add(card)
         }
         cursor.close()
-        if (cardList.isEmpty()) {
-            cardList.add(Card.EmptyCard)
-        }
         return cardList
     }
 
