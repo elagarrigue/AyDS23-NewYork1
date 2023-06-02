@@ -1,7 +1,7 @@
 package ayds.newyork.songinfo.moredetails.data.proxy
 
-import ayds.NY1.NewYorkTimes.external.DependenciesInjector
-import ayds.NY1.NewYorkTimes.external.entity.ArtistInformationExternal
+import ayds.ny1.newyorktimes.DependenciesInjector
+import ayds.ny1.newyorktimes.entity.ArtistInformationExternal
 import ayds.newyork.songinfo.moredetails.data.Proxy
 import ayds.newyork.songinfo.moredetails.domain.Card
 import ayds.newyork.songinfo.moredetails.domain.Source
