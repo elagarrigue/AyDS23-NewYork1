@@ -15,7 +15,6 @@ import com.squareup.picasso.Picasso
 class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val imageView: ImageView = itemView.findViewById(R.id.imageView)
     private val source: TextView = itemView.findViewById(R.id.source)
-    private val sourceURL: TextView = itemView.findViewById(R.id.sourceURL)
     private val description: TextView = itemView.findViewById(R.id.description)
     private val openUrlButton: Button = itemView.findViewById(R.id.openUrlButton)
 
@@ -25,7 +24,6 @@ class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             source.text = "Source: " + card.source.toString()
             description.text =
                 HtmlCompat.fromHtml(card.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
-            sourceURL.text = "URL: " + card.infoUrl
             openUrlButton.setOnClickListener {
                 openExternalUrl(card.infoUrl)
             }

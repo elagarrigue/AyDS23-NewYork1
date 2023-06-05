@@ -3,6 +3,7 @@ package ayds.newyork.songinfo.moredetails.data
 import ayds.newyork.songinfo.moredetails.domain.DataRepository
 import ayds.newyork.songinfo.moredetails.domain.Card
 import ayds.newyork.songinfo.moredetails.data.local.sqldb.DataLocalStorageImpl
+import ayds.newyork.songinfo.moredetails.domain.Source
 
 class DataRepositoryImpl(
     private val dataLocalStorage: DataLocalStorageImpl,
@@ -14,14 +15,14 @@ class DataRepositoryImpl(
         if (dataLocal.isNotEmpty()) {
             markDataAsLocal(dataLocal)
             return dataLocal
-        } else {
-            try {
-                val data = broker.getCards(name)
-                dataLocalStorage.saveData(data, name)
-                return data
-            } catch (e: Exception) {
-                return listOf()
-            }
+        } else try {
+            val data = broker.getCards(name)
+            dataLocalStorage.saveData(data, name)
+            return data
+        } catch (e: Exception) {
+            val card = Card.DataCard("NO RESULTS","",Source.UNKNOWN,"",false);
+            val list = buildList<Card> { card }
+            return list
         }
     }
 
