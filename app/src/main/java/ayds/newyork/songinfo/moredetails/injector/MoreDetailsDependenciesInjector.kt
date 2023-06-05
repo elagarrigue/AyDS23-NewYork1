@@ -14,6 +14,8 @@ import ayds.newyork.songinfo.moredetails.data.proxy.NYTProxyImpl
 import ayds.newyork.songinfo.moredetails.data.proxy.WikipediaProxyImpl
 import ayds.newyork.songinfo.moredetails.data.proxy.LastFMProxyImpl
 import ayds.newyork.songinfo.moredetails.presentation.presenter.FormatterInfo
+import lisboa4LastFM.LastFMInjector
+import wikipedia.external.external.WikipediaInjector
 
 object MoreDetailsDependenciesInjector {
 
@@ -27,9 +29,9 @@ object MoreDetailsDependenciesInjector {
             cursorToArtistInfoMapper = CursorToArtistInfoMapperImpl()
         )
         var proxys: MutableList<Proxy> = mutableListOf()
-        proxys.add(NYTProxyImpl())
-        proxys.add(LastFMProxyImpl())
-        proxys.add(WikipediaProxyImpl())
+        proxys.add(NYTProxyImpl(DependeciesInjector.init()))
+        proxys.add(LastFMProxyImpl(LastFMInjector.getLastFmService()))
+        proxys.add(WikipediaProxyImpl(WikipediaInjector.generateWikipediaService()))
         broker = BrokerServiceImpl(proxys)
         val dataRepository: DataRepository = DataRepositoryImpl(artistInfoLocalStorage, broker)
         val formatterInfo = FormatterInfo("")

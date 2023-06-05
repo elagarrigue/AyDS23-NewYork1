@@ -7,7 +7,7 @@ import ayds.observer.Observable
 
 interface MoreDetailsPresenter {
     val uiStateObservable: Observable<MoreDetailsUIState>
-    var uiState: MoreDetailsUIState
+    val uiState: MoreDetailsUIState
     fun getDataArtist(artistName: String)
 }
 
@@ -17,33 +17,33 @@ internal class MoreDetailsPresenterImpl(
 ) : MoreDetailsPresenter {
     private val onUIStateSubject = Subject<MoreDetailsUIState>()
     override val uiStateObservable = onUIStateSubject
-    override var uiState: MoreDetailsUIState = MoreDetailsUIState()
-    private lateinit var dataArtistCards: MutableList<Card>
+    override val uiState: MoreDetailsUIState = MoreDetailsUIState()
     override fun getDataArtist(artistName: String) = Thread {
-        dataArtistCards = dataRepository.getDataByTerm(artistName)
+        val dataArtistCards = dataRepository.getDataByTerm(artistName)
         updateUiState(dataArtistCards, artistName)
     }.start()
 
-    private fun updateUiState(data: MutableList<Card>, artistName: String) {
-        uiState.dataCards.clear()
+    private fun updateUiState(data: List<Card>, artistName: String) {
+        val updatedDataCards = mutableListOf<Card>()
         for (card in data) {
-            if (card is Card.DataCard) {
-                val descriptionFormatted =
-                    formatterInfo.buildCardDescription(
-                        card.description,
-                        artistName,
-                        card.isLocallyStored
-                    )
-                card.copy(
-                    descriptionFormatted,
-                    card.infoUrl,
-                    card.source,
-                    card.sourceLogoUrl,
+            val updatedCard = if (card is Card.DataCard) {
+                val descriptionFormatted = formatterInfo.buildCardDescription(
+                    card.description,
+                    artistName,
                     card.isLocallyStored
                 )
+                card.copy(
+                    description = descriptionFormatted,
+                    isLocallyStored = card.isLocallyStored
+                )
+            } else {
+                card
             }
-            uiState.dataCards.add(card)
+            updatedDataCards.add(updatedCard)
         }
-        uiStateObservable.notify(uiState)
+        val updatedUiState = uiState.copy(dataCards = updatedDataCards)
+        uiStateObservable.notify(updatedUiState)
     }
+
+
 }

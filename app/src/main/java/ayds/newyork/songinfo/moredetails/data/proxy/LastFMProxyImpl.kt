@@ -4,16 +4,15 @@ import ayds.newyork.songinfo.moredetails.data.Proxy
 import ayds.newyork.songinfo.moredetails.domain.Card
 import ayds.newyork.songinfo.moredetails.domain.Source
 import lisboa4LastFM.ArtistBiography
-import lisboa4LastFM.LastFMInjector
+import lisboa4LastFM.LastFMService
 
-class LastFMProxyImpl : Proxy {
+class LastFMProxyImpl (private val biographyProvider: LastFMService) : Proxy {
     override fun request(artistName: String): Card {
-        val biographyProvider = LastFMInjector.getLastFmService()
         val dataBiography: ArtistBiography? = biographyProvider.getArtistBiography(artistName)
-        return becomeToCard(dataBiography)
+        return mapToCard(dataBiography)
     }
 
-    private fun becomeToCard(dataBiography: ArtistBiography?): Card {
+    private fun mapToCard(dataBiography: ArtistBiography?): Card {
         if (dataBiography != null) {
             return Card.DataCard(
                 dataBiography.artistInfo,

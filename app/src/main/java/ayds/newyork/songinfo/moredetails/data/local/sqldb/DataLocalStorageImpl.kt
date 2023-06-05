@@ -29,7 +29,7 @@ class DataLocalStorageImpl(
         onUpgrade(db, oldVersion, newVersion)
     }
 
-    override fun saveData(data: MutableList<Card>, artistName: String) {
+    override fun saveData(data: List<Card>, artistName: String) {
         val database = this.writableDatabase
         database.use { database ->
             for (card in data) {
@@ -40,7 +40,7 @@ class DataLocalStorageImpl(
         }
     }
 
-    override fun getData(data: String): MutableList<Card> {
+    override fun getData(data: String): List<Card> {
         val columns = arrayOf(
             COLUMN_ID,
             COLUMN_ARTIST_NAME,

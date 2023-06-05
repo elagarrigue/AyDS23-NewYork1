@@ -3,17 +3,17 @@ package ayds.newyork.songinfo.moredetails.data.proxy
 import ayds.newyork.songinfo.moredetails.data.Proxy
 import ayds.newyork.songinfo.moredetails.domain.Card
 import ayds.newyork.songinfo.moredetails.domain.Source
+import wikipedia.external.external.WikipediaArticleService
 import wikipedia.external.external.WikipediaInjector
 import wikipedia.external.external.entities.WikipediaArtist
 
-class WikipediaProxyImpl : Proxy {
+class WikipediaProxyImpl (private val articlesProvider: WikipediaArticleService) : Proxy {
     override fun request(artistName: String): Card {
-        val articlesProvider = WikipediaInjector.generateWikipediaService()
         val dataArtist: WikipediaArtist = articlesProvider.getArtist(artistName)
-        return becomeToCard(dataArtist)
+        return mapToCard(dataArtist)
     }
 
-    private fun becomeToCard(dataArtist: WikipediaArtist): Card {
+    private fun mapToCard(dataArtist: WikipediaArtist): Card {
         if (dataArtist != null) {
             return Card.DataCard(
                 dataArtist.artistInfo,

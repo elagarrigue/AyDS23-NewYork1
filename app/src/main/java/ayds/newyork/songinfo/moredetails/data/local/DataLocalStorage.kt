@@ -11,7 +11,7 @@ interface DataLocalStorage {
 
     fun onDowngrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int)
 
-    fun saveData(data: MutableList<Card>, artistName: String)
+    fun saveData(data: List<Card>, artistName: String)
 
-    fun getData(data: String): MutableList<Card>
+    fun getData(data: String): List<Card>
 }

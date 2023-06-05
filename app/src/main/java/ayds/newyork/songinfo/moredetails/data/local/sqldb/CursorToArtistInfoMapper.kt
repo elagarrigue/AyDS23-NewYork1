@@ -6,11 +6,11 @@ import ayds.newyork.songinfo.moredetails.domain.Source
 
 
 interface CursorToArtistInfoMapper {
-    fun map(cursor: Cursor): MutableList<Card>
+    fun map(cursor: Cursor): List<Card>
 }
 
 internal class CursorToArtistInfoMapperImpl : CursorToArtistInfoMapper {
-    override fun map(cursor: Cursor): MutableList<Card> {
+    override fun map(cursor: Cursor): List<Card> {
         val cardList = mutableListOf<Card>()
         var sourceCard: Source = Source.UNKNOWN
         while (cursor.moveToNext()) {
@@ -27,7 +27,7 @@ internal class CursorToArtistInfoMapperImpl : CursorToArtistInfoMapper {
             cardList.add(card)
         }
         cursor.close()
-        return cardList
+        return cardList.toList()
     }
 
 }

@@ -9,24 +9,23 @@ class DataRepositoryImpl(
     private val broker: BrokerService,
 ) : DataRepository {
 
-    override fun getDataByTerm(name: String): MutableList<Card> {
+    override fun getDataByTerm(name: String): List<Card> {
         var dataLocal = dataLocalStorage.getData(name)
-        var data: MutableList<Card> = mutableListOf()
         if (dataLocal.isNotEmpty()) {
             markDataAsLocal(dataLocal)
-            data = dataLocal
+            return dataLocal
         } else {
             try {
-                data = broker.requestToProxys(name)
+                val data = broker.getCards(name)
                 dataLocalStorage.saveData(data, name)
+                return data
             } catch (e: Exception) {
-                data = mutableListOf(Card.EmptyCard)
+                return listOf()
             }
         }
-        return data
     }
 
-    private fun markDataAsLocal(data: MutableList<Card>) {
+    private fun markDataAsLocal(data: List<Card>) {
         for (card in data) {
             if (card is Card.DataCard) {
                 card.isLocallyStored = true
