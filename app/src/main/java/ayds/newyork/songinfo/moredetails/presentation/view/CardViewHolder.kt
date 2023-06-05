@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ayds.newyork.songinfo.R
 import ayds.newyork.songinfo.moredetails.domain.Card
 import com.squareup.picasso.Picasso
+import java.net.URL
 
 class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val imageView: ImageView = itemView.findViewById(R.id.imageView)
@@ -20,13 +21,23 @@ class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun bind(card: Card) {
         if (card is Card.DataCard) {
-            Picasso.get().load(card.sourceLogoUrl).into(imageView)
+            if (isValidUrl(card.sourceLogoUrl)) {
+                Picasso.get().load(card.sourceLogoUrl).into(imageView)
+            }
             source.text = "Source: " + card.source.toString()
-            description.text =
-                HtmlCompat.fromHtml(card.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            description.text = HtmlCompat.fromHtml(card.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
             openUrlButton.setOnClickListener {
                 openExternalUrl(card.infoUrl)
             }
+        }
+    }
+
+    private fun isValidUrl(url: String): Boolean {
+        try {
+            URL(url).toURI()
+            return true
+        } catch (e: Exception) {
+            return false
         }
     }
 

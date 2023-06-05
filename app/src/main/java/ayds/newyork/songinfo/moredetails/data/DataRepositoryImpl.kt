@@ -11,20 +11,22 @@ class DataRepositoryImpl(
 ) : DataRepository {
 
     override fun getDataByTerm(name: String): List<Card> {
-        var dataLocal = dataLocalStorage.getData(name)
+        val dataLocal = dataLocalStorage.getData(name)
         if (dataLocal.isNotEmpty()) {
             markDataAsLocal(dataLocal)
             return dataLocal
-        } else try {
+        }
+
+        return try {
             val data = broker.getCards(name)
             dataLocalStorage.saveData(data, name)
-            return data
+            data
         } catch (e: Exception) {
-            val card = Card.DataCard("NO RESULTS","",Source.UNKNOWN,"",false);
-            val list = buildList<Card> { card }
-            return list
+            val card = Card.DataCard("NO RESULTS", "", Source.UNKNOWN, "", false)
+            listOf(card)
         }
     }
+
 
     private fun markDataAsLocal(data: List<Card>) {
         for (card in data) {
