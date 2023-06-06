@@ -1,7 +1,9 @@
 package ayds.newyork.songinfo.moredetails.presentation.presenter
 
+import android.webkit.URLUtil.isValidUrl
 import ayds.newyork.songinfo.moredetails.domain.DataRepository
 import ayds.newyork.songinfo.moredetails.domain.Card
+import ayds.newyork.songinfo.moredetails.presentation.view.DEFAULT_IMAGE
 import ayds.observer.Subject
 import ayds.observer.Observable
 
@@ -26,14 +28,22 @@ internal class MoreDetailsPresenterImpl(
     private fun updateUiState(data: List<Card>, artistName: String) {
         val updatedDataCards = mutableListOf<Card>()
         for (card in data) {
-            val updatedCard = if (card is Card.DataCard) {
-                card.copy(
-                    description = formatCardDescription(card, artistName),
-                    isLocallyStored = card.isLocallyStored
-                )
-            } else {
-                card
-            }
+            val updatedCard =
+                if (card is Card.DataCard) {
+                    val updatedSourceLogoUrl =
+                        if (isValidUrl(card.sourceLogoUrl)) {
+                            card.sourceLogoUrl
+                        } else {
+                            DEFAULT_IMAGE
+                        }
+                    card.copy(
+                        description = formatCardDescription(card, artistName),
+                        sourceLogoUrl = updatedSourceLogoUrl,
+                        isLocallyStored = card.isLocallyStored
+                    )
+                } else {
+                    card
+                }
             updatedDataCards.add(updatedCard)
         }
         val updatedUiState = uiState.copy(dataCards = updatedDataCards)

@@ -3,6 +3,7 @@ package ayds.newyork.songinfo.moredetails.data
 import ayds.newyork.songinfo.moredetails.domain.DataRepository
 import ayds.newyork.songinfo.moredetails.domain.Card
 import ayds.newyork.songinfo.moredetails.data.local.sqldb.DataLocalStorageImpl
+import ayds.newyork.songinfo.moredetails.data.broker.BrokerService
 
 class DataRepositoryImpl(
     private val dataLocalStorage: DataLocalStorageImpl,

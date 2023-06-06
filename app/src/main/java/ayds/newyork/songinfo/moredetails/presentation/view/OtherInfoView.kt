@@ -49,7 +49,7 @@ class OtherInfoViewActivity() : AppCompatActivity() {
     }
 
     private fun initArtistName() {
-        artistName = intent.getStringExtra(artistName)
+        artistName = this.intent.getStringExtra(artistName)
     }
 
     private fun getDataInfo() {

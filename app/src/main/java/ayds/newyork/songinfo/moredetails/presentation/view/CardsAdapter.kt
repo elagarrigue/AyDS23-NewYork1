@@ -26,7 +26,6 @@ class CardsAdapter : RecyclerView.Adapter<CardViewHolder>() {
         if (card is Card.DataCard){
             holder.bind(card)
         }
-
     }
 
     override fun getItemCount(): Int {
