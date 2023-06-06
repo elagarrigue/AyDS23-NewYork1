@@ -1,5 +1,6 @@
-package ayds.newyork.songinfo.moredetails.data
+package ayds.newyork.songinfo.moredetails.data.broker
 
+import ayds.newyork.songinfo.moredetails.data.broker.proxy.Proxy
 import ayds.newyork.songinfo.moredetails.domain.Card
 
 interface BrokerService {

@@ -1,6 +1,5 @@
-package ayds.newyork.songinfo.moredetails.data.proxy
+package ayds.newyork.songinfo.moredetails.data.broker.proxy
 
-import ayds.newyork.songinfo.moredetails.data.Proxy
 import ayds.newyork.songinfo.moredetails.domain.Card
 import ayds.newyork.songinfo.moredetails.domain.Source
 import lisboa4LastFM.ArtistBiography
@@ -13,8 +12,8 @@ class LastFMProxyImpl (private val biographyProvider: LastFMService) : Proxy {
     }
 
     private fun mapToCard(dataBiography: ArtistBiography?): Card {
-        if (dataBiography != null) {
-            return Card.DataCard(
+        return if (dataBiography != null) {
+            Card.DataCard(
                 dataBiography.artistInfo,
                 dataBiography.url,
                 Source.LAST_FM,
@@ -22,7 +21,7 @@ class LastFMProxyImpl (private val biographyProvider: LastFMService) : Proxy {
                 dataBiography.isLocallyStored
             )
         } else {
-            return Card.EmptyCard
+            Card.EmptyCard
         }
     }
 }

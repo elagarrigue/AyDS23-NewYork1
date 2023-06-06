@@ -1,10 +1,8 @@
-package ayds.newyork.songinfo.moredetails.data.proxy
+package ayds.newyork.songinfo.moredetails.data.broker.proxy
 
-import ayds.newyork.songinfo.moredetails.data.Proxy
 import ayds.newyork.songinfo.moredetails.domain.Card
 import ayds.newyork.songinfo.moredetails.domain.Source
 import wikipedia.external.external.WikipediaArticleService
-import wikipedia.external.external.WikipediaInjector
 import wikipedia.external.external.entities.WikipediaArtist
 
 class WikipediaProxyImpl (private val articlesProvider: WikipediaArticleService) : Proxy {
@@ -14,8 +12,8 @@ class WikipediaProxyImpl (private val articlesProvider: WikipediaArticleService)
     }
 
     private fun mapToCard(dataArtist: WikipediaArtist): Card {
-        if (dataArtist != null) {
-            return Card.DataCard(
+        return if (dataArtist != null) {
+            Card.DataCard(
                 dataArtist.artistInfo,
                 dataArtist.wikipediaUrl,
                 Source.WIKIPEDIA,
@@ -23,7 +21,7 @@ class WikipediaProxyImpl (private val articlesProvider: WikipediaArticleService)
                 dataArtist.isInDataBase
             )
         } else {
-            return Card.EmptyCard
+            Card.EmptyCard
         }
     }
 

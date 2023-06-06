@@ -23,8 +23,10 @@ class CardsAdapter : RecyclerView.Adapter<CardViewHolder>() {
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
         val card = cards[position]
-        if (card is Card.DataCard)
+        if (card is Card.DataCard){
             holder.bind(card)
+        }
+
     }
 
     override fun getItemCount(): Int {

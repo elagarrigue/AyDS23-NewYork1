@@ -1,7 +1,6 @@
-package ayds.newyork.songinfo.moredetails.data.proxy
+package ayds.newyork.songinfo.moredetails.data.broker.proxy
 
 import ayds.ny1.newyorktimes.entity.ArtistInformationExternal
-import ayds.newyork.songinfo.moredetails.data.Proxy
 import ayds.newyork.songinfo.moredetails.domain.Card
 import ayds.newyork.songinfo.moredetails.domain.Source
 import ayds.ny1.newyorktimes.NYTArtistInfoService
@@ -14,8 +13,8 @@ class NYTProxyImpl (private val artistInfoProvider: NYTArtistInfoService): Proxy
     }
 
     private fun mapToCard(dataInfo: ArtistInformationExternal?): Card {
-        if (dataInfo is ArtistInformationExternal.ArtistInformationDataExternal) {
-            return Card.DataCard(
+        return if (dataInfo is ArtistInformationExternal.ArtistInformationDataExternal) {
+            Card.DataCard(
                 dataInfo.artistName,
                 dataInfo.url,
                 Source.NEW_YORK_TIMES,
@@ -23,7 +22,7 @@ class NYTProxyImpl (private val artistInfoProvider: NYTArtistInfoService): Proxy
                 dataInfo.isLocallyStored
             )
         } else {
-            return Card.EmptyCard
+            Card.EmptyCard
         }
     }
 

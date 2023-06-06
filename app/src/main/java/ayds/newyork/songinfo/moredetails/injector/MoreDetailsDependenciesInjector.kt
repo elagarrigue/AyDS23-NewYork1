@@ -8,11 +8,11 @@ import ayds.newyork.songinfo.moredetails.domain.DataRepository
 import ayds.newyork.songinfo.moredetails.presentation.presenter.MoreDetailsPresenter
 import ayds.newyork.songinfo.moredetails.presentation.presenter.MoreDetailsPresenterImpl
 import ayds.newyork.songinfo.moredetails.presentation.view.OtherInfoViewActivity
-import ayds.newyork.songinfo.moredetails.data.BrokerServiceImpl
-import ayds.newyork.songinfo.moredetails.data.Proxy
-import ayds.newyork.songinfo.moredetails.data.proxy.NYTProxyImpl
-import ayds.newyork.songinfo.moredetails.data.proxy.WikipediaProxyImpl
-import ayds.newyork.songinfo.moredetails.data.proxy.LastFMProxyImpl
+import ayds.newyork.songinfo.moredetails.data.broker.BrokerServiceImpl
+import ayds.newyork.songinfo.moredetails.data.broker.proxy.Proxy
+import ayds.newyork.songinfo.moredetails.data.broker.proxy.NYTProxyImpl
+import ayds.newyork.songinfo.moredetails.data.broker.proxy.WikipediaProxyImpl
+import ayds.newyork.songinfo.moredetails.data.broker.proxy.LastFMProxyImpl
 import ayds.newyork.songinfo.moredetails.presentation.presenter.FormatterInfo
 import lisboa4LastFM.LastFMInjector
 import wikipedia.external.external.WikipediaInjector
