@@ -10,7 +10,10 @@ internal class BrokerServiceImpl(private val proxys: List<Proxy>) : BrokerServic
     override fun getCards(artistName: String): List<Card> {
         var cardList: MutableList<Card> = mutableListOf()
         for (proxy in proxys) {
-            cardList.add(proxy.request(artistName))
+            var proxyCard : Card = proxy.request(artistName)
+            if( proxyCard is Card.DataCard) {
+                cardList.add(proxyCard)
+            }
         }
         return cardList.toList()
     }

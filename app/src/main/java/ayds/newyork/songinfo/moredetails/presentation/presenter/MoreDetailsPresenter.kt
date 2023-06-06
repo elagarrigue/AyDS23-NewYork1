@@ -27,13 +27,8 @@ internal class MoreDetailsPresenterImpl(
         val updatedDataCards = mutableListOf<Card>()
         for (card in data) {
             val updatedCard = if (card is Card.DataCard) {
-                val descriptionFormatted = formatterInfo.buildCardDescription(
-                    card.description,
-                    artistName,
-                    card.isLocallyStored
-                )
                 card.copy(
-                    description = descriptionFormatted,
+                    description = formatCardDescription(card, artistName),
                     isLocallyStored = card.isLocallyStored
                 )
             } else {
@@ -45,5 +40,11 @@ internal class MoreDetailsPresenterImpl(
         uiStateObservable.notify(updatedUiState)
     }
 
-
+    private fun formatCardDescription(card: Card.DataCard, artistName: String): String {
+        return formatterInfo.buildCardDescription(
+            card.description,
+            artistName,
+            card.isLocallyStored
+        )
+    }
 }

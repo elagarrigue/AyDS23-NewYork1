@@ -79,7 +79,7 @@ class DataLocalStorageImpl(
             put(COLUMN_ARTIST_NAME, artistName)
             put(COLUMN_DESCRIPTION, data.description)
             put(COLUMN_INFO_URL, data.infoUrl)
-            put(COLUMN_SOURCE, getSourceValue(data.source))
+            put(COLUMN_SOURCE, data.source?.let { getSourceValue(it) })
             put(COLUMN_SOURCE_URL, data.sourceLogoUrl)
         }
 
@@ -88,7 +88,6 @@ class DataLocalStorageImpl(
             Source.LAST_FM -> "LastFM"
             Source.WIKIPEDIA -> "Wikipedia"
             Source.NEW_YORK_TIMES -> "New York Times"
-            Source.UNKNOWN -> "Unknown"
         }
     }
 

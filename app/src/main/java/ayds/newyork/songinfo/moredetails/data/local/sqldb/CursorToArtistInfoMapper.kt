@@ -12,7 +12,7 @@ interface CursorToArtistInfoMapper {
 internal class CursorToArtistInfoMapperImpl : CursorToArtistInfoMapper {
     override fun map(cursor: Cursor): List<Card> {
         val cardList = mutableListOf<Card>()
-        var sourceCard: Source = Source.UNKNOWN
+        var sourceCard: Source? = null
         while (cursor.moveToNext()) {
             val description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION))
             val infoUrl = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_INFO_URL))

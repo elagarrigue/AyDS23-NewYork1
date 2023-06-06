@@ -1,7 +1,6 @@
 package ayds.newyork.songinfo.moredetails.presentation.view
 
-import android.content.Intent
-import android.net.Uri
+
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -10,6 +9,7 @@ import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import ayds.newyork.songinfo.R
 import ayds.newyork.songinfo.moredetails.domain.Card
+import ayds.newyork.songinfo.utils.navigation.NavigationUtils
 import com.squareup.picasso.Picasso
 import java.net.URL
 
@@ -42,8 +42,6 @@ class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     private fun openExternalUrl(url: String?) {
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse(url)
-        itemView.context.startActivity(intent)
+       NavigationUtils.openExternalUrl(itemView.context, url)
     }
 }

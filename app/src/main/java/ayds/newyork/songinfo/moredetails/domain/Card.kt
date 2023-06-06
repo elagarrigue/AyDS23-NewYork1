@@ -5,7 +5,7 @@ sealed class Card {
     data class DataCard(
         val description: String,
         val infoUrl: String?,
-        val source: Source,
+        val source: Source?,
         val sourceLogoUrl: String,
         var isLocallyStored: Boolean = false
     ) : Card()
@@ -16,6 +16,5 @@ sealed class Card {
 enum class Source {
     LAST_FM,
     WIKIPEDIA,
-    NEW_YORK_TIMES,
-    UNKNOWN
+    NEW_YORK_TIMES
 }
