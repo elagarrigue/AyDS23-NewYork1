@@ -22,6 +22,11 @@ class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val navigationUtils: NavigationUtils = UtilsInjector.navigationUtils
     fun bind(card: Card) {
         if (card is Card.DataCard) {
+            if (card.sourceLogoUrl == DEFAULT_IMAGE )
+            {
+                source.visibility = View.GONE
+                openUrlButton.visibility = View.GONE
+            }
             Picasso.get().load(card.sourceLogoUrl).into(imageView)
             source.text = "Source: " + card.source.toString()
             description.text = HtmlCompat.fromHtml(card.description, HtmlCompat.FROM_HTML_MODE_LEGACY)

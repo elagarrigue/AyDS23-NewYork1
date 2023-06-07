@@ -1,6 +1,5 @@
-package ayds.newyork.songinfo.moredetails.presentation.view
-
 import ayds.newyork.songinfo.moredetails.presentation.presenter.FormatterInfo
+import ayds.newyork.songinfo.moredetails.presentation.view.*
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -9,38 +8,46 @@ class FormatterInfoTest {
     private lateinit var formatterInfo: FormatterInfo
     @Before
     fun setUp() {
-        formatterInfo = FormatterInfo("John Doe")
-    }
-    @Test
-    fun `with non-null abstract and local storage should return formatted text`() {
-        val abstract = "This is the Bad Bunny's abstract"
-        val expectedFormattedText = "<html><div width=400><font face=\"arial\">[*] This is the <b>BAD BUNNY</b>'s abstract</font></div></html>"
-        val result = formatterInfo.buildCardDescription("Bad Bunny", abstract, true)
-        assertEquals(expectedFormattedText, result)
-    }
-    @Test
-    fun `with null abstract should return no results`() {
-        val abstract = ""
-        val isLocalStored = true
-        val expectedNoResults = "No Results"
-        val result = formatterInfo.buildCardDescription(formatterInfo.artistName, abstract, isLocalStored)
-        assertEquals(expectedNoResults, result)
+        formatterInfo = FormatterInfo("Artist Name")
     }
 
     @Test
-    fun `with empty abstract should return no results`() {
-        val result = formatterInfo.buildCardDescription("Quevedo", "", true)
-        val expected = "No Results"
-        assertEquals(expected, result)
-    }
+    fun `buildCardDescription should return NO_RESULTS when description is blank or isLocalStored is false`() {
 
-    @Test
-    fun `buildArtistInfoAbstract with non-local storage should return no results`() {
-        val artistName = "John Doe"
-        val abstract = "This is the John Doe's abstract"
+        val description = "Description"
         val isLocalStored = false
-        val expectedNoResults = "No Results"
-        val result = formatterInfo.buildCardDescription(artistName, abstract, isLocalStored)
-        assertEquals(expectedNoResults, result)
+
+        val result = formatterInfo.buildCardDescription(description, "Artist Name", isLocalStored)
+
+        assertEquals(NO_RESULTS, result)
+    }
+
+    @Test
+    fun `buildCardDescription should return formatted description when description is not blank and isLocalStored is true`() {
+
+        val description = "Description"
+        val isLocalStored = true
+
+        val expectedFormattedDescription = "$HTML_DIV_WIDTH$HTML_FONT_FACE$PREFIX Description $HTML_CLOSE_TAGS"
+
+        val result = formatterInfo.buildCardDescription(description, "Artist Name", isLocalStored)
+
+        assertEquals(expectedFormattedDescription, result)
+    }
+
+    @Test
+    fun `buildCardDescription should replace artist name and format the text`() {
+
+        val description = "The artist name is artist name."
+        val isLocalStored = true
+        val ARTIST_NAME = "ARTIST NAME"
+        val expectedFormattedDescription =
+            "$HTML_DIV_WIDTH$HTML_FONT_FACE$PREFIX The $HTML_BOLD$ARTIST_NAME$HTML_BOLD_CLOSE is $HTML_BOLD$ARTIST_NAME$HTML_BOLD_CLOSE.$HTML_CLOSE_TAGS"
+
+        val result = formatterInfo.buildCardDescription(description, "ARTIST NAME", isLocalStored)
+
+        assertEquals(expectedFormattedDescription, result)
     }
 }
+
+

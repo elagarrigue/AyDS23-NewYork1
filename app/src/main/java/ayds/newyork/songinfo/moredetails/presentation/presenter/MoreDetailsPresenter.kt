@@ -1,6 +1,5 @@
 package ayds.newyork.songinfo.moredetails.presentation.presenter
 
-import android.webkit.URLUtil.isValidUrl
 import ayds.newyork.songinfo.moredetails.domain.DataRepository
 import ayds.newyork.songinfo.moredetails.domain.Card
 import ayds.newyork.songinfo.moredetails.presentation.view.DEFAULT_IMAGE
@@ -33,13 +32,15 @@ internal class MoreDetailsPresenterImpl(
                     val updatedSourceLogoUrl: String
                     if (!isValidUrl(card.sourceLogoUrl)) {
                         updatedSourceLogoUrl = DEFAULT_IMAGE
-                    } else {
+                     } else {
                         updatedSourceLogoUrl = card.sourceLogoUrl
                     }
                     card.copy(
                         description = formatCardDescription(card, artistName),
+                        source = card.source,
                         sourceLogoUrl = updatedSourceLogoUrl,
-                        isLocallyStored = card.isLocallyStored
+                        isLocallyStored = card.isLocallyStored,
+                        infoUrl = card.infoUrl
                     )
                 } else {
                     card

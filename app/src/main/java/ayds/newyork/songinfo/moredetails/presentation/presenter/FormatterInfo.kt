@@ -9,14 +9,23 @@ class FormatterInfo(var artistName: String) {
         artistName: String,
         isLocalStored: Boolean
     ): String {
+        val formattedDescription: String
         this.artistName = artistName
-        return if (description.isNullOrBlank() || !isLocalStored) {
-            NO_RESULTS
+
+        if (description.isNullOrBlank()) {
+            formattedDescription = "NO RESULTS"
         } else {
-            val text = "$PREFIX $description"
-            getFormattedTextFromDescription(text)
+            val text = if (isLocalStored) {
+                "$PREFIX $description"
+            } else {
+                description
+            }
+            formattedDescription = getFormattedTextFromDescription(text)
         }
+
+        return formattedDescription
     }
+
 
     private fun getFormattedTextFromDescription(description: String): String {
         val text = description.replace(ENTER_LINE_ESCAPE_SEQ, ENTER_LINE)
