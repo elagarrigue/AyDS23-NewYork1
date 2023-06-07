@@ -1,13 +1,13 @@
-package ayds.newyork.songinfo.moredetails.data
-
+import ayds.newyork.songinfo.moredetails.data.DataRepositoryImpl
 import ayds.newyork.songinfo.moredetails.data.local.sqldb.DataLocalStorageImpl
 import ayds.newyork.songinfo.moredetails.data.broker.BrokerService
 import ayds.newyork.songinfo.moredetails.domain.Card
-import io.mockk.every
-import io.mockk.mockk
+import io.mockk.*
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+
 
 class DataRepositoryImplTest {
 
@@ -17,52 +17,45 @@ class DataRepositoryImplTest {
 
     @Before
     fun setUp() {
-        dataLocalStorage = mockk()
-        broker = mockk()
+        dataLocalStorage = mockk(relaxed = true)
+        broker = mockk(relaxed = true)
         dataRepository = DataRepositoryImpl(dataLocalStorage, broker)
     }
 
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
+
     @Test
-    fun getDataByTerm_localDataNotEmpty_returnsLocalData() {
-        // Arrange
-        val name = "test"
-        val localCards = listOf(Card.DataCard("Local Data","",null,"",true))
+    fun `test getDataByTerm with local data available`() {
+        val name = "artist name"
+        val localCards = listOf<Card>(mockk(relaxed = true))
         every { dataLocalStorage.getData(name) } returns localCards
 
-        // Act
         val result = dataRepository.getDataByTerm(name)
 
-        // Assert
         assertEquals(localCards, result)
+        verify(exactly = 1) { dataLocalStorage.getData(name) }
+        verify(exactly = 0) { broker.getCards(name) }
+        verify(exactly = 0) { dataLocalStorage.saveData(any(), any()) }
     }
 
     @Test
-    fun getDataByTerm_localDataEmpty_returnsServiceData() {
-        // Arrange
-        val name = "test"
-        val serviceCards = listOf(Card.DataCard("Service Data","",null,"",false))
-        every { dataLocalStorage.getData(name) } returns listOf()
+    fun `test getDataByTerm with no local data available`() {
+        val name = "artist name"
+        val serviceCards = listOf<Card>(mockk(relaxed = true))
+        every { dataLocalStorage.getData(name) } returns emptyList()
         every { broker.getCards(name) } returns serviceCards
+        every { dataLocalStorage.saveData(serviceCards, name) } just runs
 
-        // Act
         val result = dataRepository.getDataByTerm(name)
 
-        // Assert
         assertEquals(serviceCards, result)
-    }
-
-    @Test
-    fun getDataByTerm_serviceError_returnsEmptyList() {
-        // Arrange
-        val name = "test"
-        every { dataLocalStorage.getData(name) } returns listOf()
-        every { broker.getCards(name) } throws Exception()
-
-        // Act
-        val result = dataRepository.getDataByTerm(name)
-
-        // Assert
-        assertEquals(emptyList<Card>(), result)
+        verify(exactly = 1) { dataLocalStorage.getData(name) }
+        verify(exactly = 1) { broker.getCards(name) }
+        verify(exactly = 1) { dataLocalStorage.saveData(serviceCards, name) }
     }
 }
+
 

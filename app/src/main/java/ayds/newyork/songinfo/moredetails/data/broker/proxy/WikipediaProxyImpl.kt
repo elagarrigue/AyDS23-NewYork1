@@ -7,8 +7,12 @@ import wikipedia.external.external.entities.WikipediaArtist
 
 class WikipediaProxyImpl (private val articlesProvider: WikipediaArticleService) : Proxy {
     override fun request(artistName: String): Card {
-        val dataArtist: WikipediaArtist = articlesProvider.getArtist(artistName)
-        return mapToCard(dataArtist)
+        return try {
+            val dataArtist: WikipediaArtist = articlesProvider.getArtist(artistName)
+            return mapToCard(dataArtist)
+        } catch (e: Exception) {
+            Card.EmptyCard
+        }
     }
 
     private fun mapToCard(dataArtist: WikipediaArtist): Card {

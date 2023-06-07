@@ -18,18 +18,21 @@ class DataRepositoryImpl(
                 cardsLocal
             }
             else -> {
-                val cardsService = broker.getCards(name)
-                dataLocalStorage.saveData(cardsService, name)
-                cardsService
+                    val cardsService = broker.getCards(name)
+                    cardsService?.let {
+                        dataLocalStorage.saveData(cardsService, name)
+                    }
+                    cardsService
             }
         }
     }
-}
 
-private fun markDataAsLocal(data: List<Card>) {
-    for (card in data) {
-        if (card is Card.DataCard) {
-            card.isLocallyStored = true
+
+    private fun markDataAsLocal(data: List<Card>) {
+        for (card in data) {
+            if (card is Card.DataCard) {
+                card.isLocallyStored = true
+            }
         }
     }
 }

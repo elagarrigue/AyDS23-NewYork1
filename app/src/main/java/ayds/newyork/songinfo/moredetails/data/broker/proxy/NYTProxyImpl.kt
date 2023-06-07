@@ -8,8 +8,12 @@ import ayds.ny1.newyorktimes.NYTArtistInfoService
 class NYTProxyImpl (private val artistInfoProvider: NYTArtistInfoService): Proxy {
 
     override fun request(artistName: String): Card {
-        val dataInfo: ArtistInformationExternal? = artistInfoProvider.getArtistInfo(artistName)
-        return mapToCard(dataInfo)
+        return try {
+            val dataInfo: ArtistInformationExternal? = artistInfoProvider.getArtistInfo(artistName)
+            mapToCard(dataInfo)
+        } catch (e: Exception) {
+            Card.EmptyCard
+        }
     }
 
     private fun mapToCard(dataInfo: ArtistInformationExternal?): Card {

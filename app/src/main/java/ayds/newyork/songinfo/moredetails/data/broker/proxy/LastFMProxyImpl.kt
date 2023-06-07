@@ -7,8 +7,12 @@ import lisboa4LastFM.LastFMService
 
 class LastFMProxyImpl (private val biographyProvider: LastFMService) : Proxy {
     override fun request(artistName: String): Card {
-        val dataBiography: ArtistBiography? = biographyProvider.getArtistBiography(artistName)
-        return mapToCard(dataBiography)
+        return try {
+            val dataBiography: ArtistBiography? = biographyProvider.getArtistBiography(artistName)
+            mapToCard(dataBiography)
+        } catch (e: Exception) {
+            Card.EmptyCard
+        }
     }
 
     private fun mapToCard(dataBiography: ArtistBiography?): Card {

@@ -26,33 +26,25 @@ internal class MoreDetailsPresenterImpl(
 
     private fun updateUiState(data: List<Card>, artistName: String) {
         val updatedDataCards = mutableListOf<Card>()
-        for (card in data) {
-            val updatedCard =
-                if (card is Card.DataCard) {
-                    val updatedSourceLogoUrl: String
-                    if (!isValidUrl(card.sourceLogoUrl)) {
-                        updatedSourceLogoUrl = DEFAULT_IMAGE
-                     } else {
-                        updatedSourceLogoUrl = card.sourceLogoUrl
+        if (data.isNotEmpty()) {
+            for (card in data) {
+                    if (card is Card.DataCard) {
+                        val updatedCard =
+                            card.copy(
+                            description = formatCardDescription(card, artistName),
+                            source = card.source,
+                            sourceLogoUrl = card.sourceLogoUrl,
+                            isLocallyStored = card.isLocallyStored,
+                            infoUrl = card.infoUrl
+                        )
+                        updatedDataCards.add(updatedCard)
                     }
-                    card.copy(
-                        description = formatCardDescription(card, artistName),
-                        source = card.source,
-                        sourceLogoUrl = updatedSourceLogoUrl,
-                        isLocallyStored = card.isLocallyStored,
-                        infoUrl = card.infoUrl
-                    )
-                } else {
-                    card
-                }
-            updatedDataCards.add(updatedCard)
+            }
         }
+        else updatedDataCards.add(Card.DataCard("NOT FOUND RESULTS","",null, DEFAULT_IMAGE,false))
+
         val updatedUiState = uiState.copy(dataCards = updatedDataCards)
         uiStateObservable.notify(updatedUiState)
-    }
-
-    private fun isValidUrl(url: String): Boolean{
-        return (url != null && url.isNotEmpty())
     }
 
     private fun formatCardDescription(card: Card.DataCard, artistName: String): String {
