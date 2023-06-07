@@ -1,63 +1,68 @@
 package ayds.newyork.songinfo.moredetails.data
 
-
-import ayds.newyork.songinfo.moredetails.domain.Card
-import ayds.newyork.songinfo.moredetails.data.external.ArtistInfoExternalStorage
 import ayds.newyork.songinfo.moredetails.data.local.sqldb.DataLocalStorageImpl
-import io.mockk.*
+import ayds.newyork.songinfo.moredetails.data.broker.BrokerService
+import ayds.newyork.songinfo.moredetails.domain.Card
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 
 class DataRepositoryImplTest {
 
-    private val mockLocalStorage = mockk<DataLocalStorageImpl>()
-    private val mockExternalStorage = mockk<ArtistInfoExternalStorage>()
-    private val repository = DataRepositoryImpl(mockLocalStorage, mockExternalStorage)
+    private lateinit var dataLocalStorage: DataLocalStorageImpl
+    private lateinit var broker: BrokerService
+    private lateinit var dataRepository: DataRepositoryImpl
 
-    @Test
-    fun `given artis info in LocalStorage`() {
-        val artistName = "test artist"
-        val artistInfo = Card.CardData(
-            artistName,
-            "test url",
-            "test description",
-            false
-        )
-        every { mockLocalStorage.getArtistInfo(artistName) } returns artistInfo
-
-        val result = repository.getArtistInfoByTerm(artistName)
-
-        assertEquals(artistInfo, result)
-        assertTrue(artistInfo.isLocallyStored)
+    @Before
+    fun setUp() {
+        dataLocalStorage = mockk()
+        broker = mockk()
+        dataRepository = DataRepositoryImpl(dataLocalStorage, broker)
     }
 
     @Test
-    fun `given artist info not in LocalStorage`() {
-        val artistName = "test artist"
-        val artistInfo = Card.CardData(
-            artistName = "Test Artist",
-            abstract = "Description",
-            url = "https://example.com/artist"
-        )
-        every { mockLocalStorage.getArtistInfo(artistName) } returns null
-        every { mockExternalStorage.getArtistInfo(artistName) } returns artistInfo
+    fun getDataByTerm_localDataNotEmpty_returnsLocalData() {
+        // Arrange
+        val name = "test"
+        val localCards = listOf(Card.DataCard("Local Data","",null,"",true))
+        every { dataLocalStorage.getData(name) } returns localCards
 
-        val result = repository.getArtistInfoByTerm(artistName)
+        // Act
+        val result = dataRepository.getDataByTerm(name)
 
-        assertEquals(artistInfo, result)
-
-        verify { mockLocalStorage.saveArtistInfo(artistInfo) }
+        // Assert
+        assertEquals(localCards, result)
     }
 
     @Test
-    fun `given artist info not in LocalStorage and exception occurs`() {
-        val artistName = "test artist"
-        every { mockLocalStorage.getArtistInfo(artistName) } returns Card.CardEmpty
-        every { mockExternalStorage.getArtistInfo(artistName) } throws Exception()
-        val result = repository.getArtistInfoByTerm(artistName)
-        assertEquals(result, Card.CardEmpty)
+    fun getDataByTerm_localDataEmpty_returnsServiceData() {
+        // Arrange
+        val name = "test"
+        val serviceCards = listOf(Card.DataCard("Service Data","",null,"",false))
+        every { dataLocalStorage.getData(name) } returns listOf()
+        every { broker.getCards(name) } returns serviceCards
+
+        // Act
+        val result = dataRepository.getDataByTerm(name)
+
+        // Assert
+        assertEquals(serviceCards, result)
     }
 
+    @Test
+    fun getDataByTerm_serviceError_returnsEmptyList() {
+        // Arrange
+        val name = "test"
+        every { dataLocalStorage.getData(name) } returns listOf()
+        every { broker.getCards(name) } throws Exception()
 
+        // Act
+        val result = dataRepository.getDataByTerm(name)
+
+        // Assert
+        assertEquals(emptyList<Card>(), result)
+    }
 }
+

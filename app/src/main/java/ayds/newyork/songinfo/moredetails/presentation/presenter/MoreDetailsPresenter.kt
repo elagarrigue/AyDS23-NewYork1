@@ -30,12 +30,12 @@ internal class MoreDetailsPresenterImpl(
         for (card in data) {
             val updatedCard =
                 if (card is Card.DataCard) {
-                    val updatedSourceLogoUrl =
-                        if (isValidUrl(card.sourceLogoUrl)) {
-                            card.sourceLogoUrl
-                        } else {
-                            DEFAULT_IMAGE
-                        }
+                    val updatedSourceLogoUrl: String
+                    if (!isValidUrl(card.sourceLogoUrl)) {
+                        updatedSourceLogoUrl = DEFAULT_IMAGE
+                    } else {
+                        updatedSourceLogoUrl = card.sourceLogoUrl
+                    }
                     card.copy(
                         description = formatCardDescription(card, artistName),
                         sourceLogoUrl = updatedSourceLogoUrl,
@@ -48,6 +48,10 @@ internal class MoreDetailsPresenterImpl(
         }
         val updatedUiState = uiState.copy(dataCards = updatedDataCards)
         uiStateObservable.notify(updatedUiState)
+    }
+
+    private fun isValidUrl(url: String): Boolean{
+        return (url != null && url.isNotEmpty())
     }
 
     private fun formatCardDescription(card: Card.DataCard, artistName: String): String {

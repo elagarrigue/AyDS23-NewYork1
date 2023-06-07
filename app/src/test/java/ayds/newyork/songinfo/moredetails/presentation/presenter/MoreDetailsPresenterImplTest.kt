@@ -1,72 +1,66 @@
-package ayds.newyork.songinfo.moredetails.presentation.presenter
-
 import ayds.newyork.songinfo.moredetails.domain.DataRepository
 import ayds.newyork.songinfo.moredetails.domain.Card
+import ayds.newyork.songinfo.moredetails.presentation.presenter.FormatterInfo
+import ayds.newyork.songinfo.moredetails.presentation.presenter.MoreDetailsPresenterImpl
+import ayds.newyork.songinfo.moredetails.presentation.presenter.MoreDetailsUIState
+import ayds.newyork.songinfo.moredetails.presentation.view.DEFAULT_IMAGE
 import ayds.observer.Observable
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import org.junit.Before
+import io.mockk.*
 import org.junit.Test
 
 class MoreDetailsPresenterImplTest {
 
-    private lateinit var moreDetailsPresenter: MoreDetailsPresenter
-    private lateinit var dataRepository: DataRepository
-    private lateinit var uiStateObservable: Observable<MoreDetailsUIState>
-    @Before
-    fun setUp() {
-        dataRepository = mockk()
-        moreDetailsPresenter = MoreDetailsPresenterImpl(dataRepository)
-        uiStateObservable = moreDetailsPresenter.uiStateObservable
-    }
-
     @Test
-    fun `getArtistInfo with non-existing artist should update UI state to empty`() {
-        val artist = Card.CardEmpty
-        val artistName = "Artist empty"
-        val expectedUiState = MoreDetailsUIState(
-            "",
-            "",
-            "",
-            false
-        )
-        val uiStateTester: (MoreDetailsUIState) -> Unit = mockk(relaxed =true)
-        moreDetailsPresenter.uiStateObservable.subscribe { uiStateTester(it) }
+    fun getDataArtist_updateUiStateWithFormattedData() {
+        // Arrange
+        val artistName = "Test Artist"
+        val dataCards = listOf(Card.DataCard("Test Description"))
+        val dataRepository = mockk<DataRepository>()
+        val formatterInfo = mockk<FormatterInfo>()
+        val uiStateObservable = mockk<Observable<MoreDetailsUIState>>(relaxed = true)
+        val presenter = MoreDetailsPresenterImpl(dataRepository, formatterInfo)
+        presenter.uiStateObservable = uiStateObservable
 
-        every { dataRepository.getArtistInfoByTerm(artistName) } returns artist
+        every { dataRepository.getDataByTerm(artistName) } returns dataCards
+        every { formatterInfo.buildCardDescription(any(), any(), any()) } returns "Formatted Description"
 
-        moreDetailsPresenter.getArtistInfo(artistName)
+        // Act
+        presenter.getDataArtist(artistName)
+        Thread.sleep(100) // Esperar a que se complete el hilo
 
-        verify { uiStateTester(expectedUiState) }
-    }
-
-    @Test
-    fun `getArtistInfo with existing artist should update UI state to artist information`() {
-        val artistName = "Madonna"
-        val artist = Card.CardData(
-            artistName = artistName,
-            url = "https://www.madonna.com/",
-            abstract = "Madonna is an American singer, songwriter, and actress.",
+        // Assert
+        val expectedCard = Card.DataCard(
+            "Formatted Description",
+            DEFAULT_IMAGE,
             isLocallyStored = false
         )
-        val expectedUiState = MoreDetailsUIState(
-            artistName = artistName,
-            url = artist.url,
-            abstract = artist.abstract,
-            isLocallyStored = artist.isLocallyStored
-        )
-
-        val uiStateTester: (MoreDetailsUIState) -> Unit = mockk(relaxed =true)
-        moreDetailsPresenter.uiStateObservable.subscribe { uiStateTester(it) }
-
-        every { dataRepository.getArtistInfoByTerm(artistName) } returns artist
-
-        moreDetailsPresenter.getArtistInfo(artistName)
-
-        verify { uiStateTester(expectedUiState) }
+        val expectedUiState = MoreDetailsUIState(dataCards = listOf(expectedCard))
+        verify { uiStateObservable.notify(expectedUiState) }
     }
+    @Test
+   /* fun getDataArtist_updateUiStateWithDefaultImageWhenLogoUrlIsInvalid() {
+        // Arrange
+        val artistName = "Test Artist"
+        val dataCards = listOf(
+            Card.DataCard("Test Description","",null,"Invalid URL",false),
+            Card.DataCard("Another Description", "",null,"Valid URL",false))
+
+        every { dataRepository.getDataByTerm(artistName) } returns dataCards
+        every { formatterInfo.buildCardDescription(any(), any(), any()) } returns "Formatted Description"
+
+        // Act
+        presenter.getDataArtist(artistName)
+        Thread.sleep(100) // Esperar a que se complete el hilo
+
+        // Assert
+        val expectedCard1 = Card.DataCard("Formatted Description","",null, sourceLogoUrl = DEFAULT_IMAGE,false)
+        val expectedCard2 = Card.DataCard("Formatted Description", "",null,sourceLogoUrl = "Valid URL",false)
+        val expectedUiState = MoreDetailsUIState(dataCards = listOf(expectedCard1, expectedCard2))
+
+        assertEquals(expectedUiState, presenter.uiState)
+    }*/
 }
+
 
 
 

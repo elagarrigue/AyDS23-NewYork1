@@ -26,7 +26,7 @@ class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             source.text = "Source: " + card.source.toString()
             description.text = HtmlCompat.fromHtml(card.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
             openUrlButton.setOnClickListener {
-                navigationUtils.openExternalUrl(itemView.context as Activity,card.infoUrl)
+                navigationUtils.openExternalUrl(itemView.context ,card.infoUrl)
             }
         }
     }
