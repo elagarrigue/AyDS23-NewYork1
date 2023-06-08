@@ -18,7 +18,7 @@ internal class MoreDetailsPresenterImpl(
 ) : MoreDetailsPresenter {
     private val onUIStateSubject = Subject<MoreDetailsUIState>()
     override val uiStateObservable = onUIStateSubject
-    override val uiState: MoreDetailsUIState = MoreDetailsUIState()
+    override var uiState: MoreDetailsUIState = MoreDetailsUIState()
     override fun getDataArtist(artistName: String) = Thread {
         val dataArtistCards = dataRepository.getDataByTerm(artistName)
         updateUiState(dataArtistCards, artistName)
@@ -29,22 +29,20 @@ internal class MoreDetailsPresenterImpl(
         if (data.isNotEmpty()) {
             for (card in data) {
                     if (card is Card.DataCard) {
-                        val updatedCard =
-                            card.copy(
-                            description = formatCardDescription(card, artistName),
-                            source = card.source,
-                            sourceLogoUrl = card.sourceLogoUrl,
-                            isLocallyStored = card.isLocallyStored,
-                            infoUrl = card.infoUrl
-                        )
-                        updatedDataCards.add(updatedCard)
+                        updatedDataCards.add(updateDataCard(card, artistName))
                     }
             }
         }
         else updatedDataCards.add(Card.DataCard("NOT FOUND RESULTS","",null, DEFAULT_IMAGE,false))
 
-        val updatedUiState = uiState.copy(dataCards = updatedDataCards)
-        uiStateObservable.notify(updatedUiState)
+        uiState = uiState.copy(dataCards = updatedDataCards)
+        uiStateObservable.notify(uiState)
+    }
+
+    private fun updateDataCard(card: Card.DataCard, artistName: String): Card {
+        return card.copy(
+            description = formatCardDescription(card, artistName)
+        )
     }
 
     private fun formatCardDescription(card: Card.DataCard, artistName: String): String {
