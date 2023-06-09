@@ -1,8 +1,8 @@
-package ayds.newyork.songinfo.moredetails.presentation.presenter
-
-import ayds.newyork.songinfo.moredetails.domain.ArtistInfoRepository
-import ayds.newyork.songinfo.moredetails.domain.ArtistInformation
-import ayds.observer.Observable
+import ayds.newyork.songinfo.moredetails.domain.Card
+import ayds.newyork.songinfo.moredetails.domain.DataRepository
+import ayds.newyork.songinfo.moredetails.presentation.presenter.FormatterInfo
+import ayds.newyork.songinfo.moredetails.presentation.presenter.MoreDetailsPresenterImpl
+import ayds.newyork.songinfo.moredetails.presentation.view.DEFAULT_IMAGE
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -10,63 +10,56 @@ import org.junit.Before
 import org.junit.Test
 
 class MoreDetailsPresenterImplTest {
+    private lateinit var dataRepository: DataRepository
+    private lateinit var formatterInfo: FormatterInfo
+    private lateinit var presenter: MoreDetailsPresenterImpl
 
-    private lateinit var moreDetailsPresenter: MoreDetailsPresenter
-    private lateinit var artistInfoRepository: ArtistInfoRepository
-    private lateinit var uiStateObservable: Observable<MoreDetailsUIState>
     @Before
     fun setUp() {
-        artistInfoRepository = mockk()
-        moreDetailsPresenter = MoreDetailsPresenterImpl(artistInfoRepository)
-        uiStateObservable = moreDetailsPresenter.uiStateObservable
+        dataRepository = mockk()
+        formatterInfo = mockk()
+        presenter = MoreDetailsPresenterImpl(dataRepository, formatterInfo)
     }
 
     @Test
-    fun `getArtistInfo with non-existing artist should update UI state to empty`() {
-        val artist = ArtistInformation.ArtistInformationEmpty
-        val artistName = "Artist empty"
-        val expectedUiState = MoreDetailsUIState(
-            "",
-            "",
-            "",
-            false
+    fun `getDataArtist should update the UI state correctly`() {
+        // Arrange
+        val artistName = "Artist Name"
+        val card1 = Card.DataCard(
+            description = "Description 1",
+            infoUrl = "",
+            source = null,
+            sourceLogoUrl = "https://example.com/logo1.png",
+            isLocallyStored = true
         )
-        val uiStateTester: (MoreDetailsUIState) -> Unit = mockk(relaxed =true)
-        moreDetailsPresenter.uiStateObservable.subscribe { uiStateTester(it) }
-
-        every { artistInfoRepository.getArtistInfoByTerm(artistName) } returns artist
-
-        moreDetailsPresenter.getArtistInfo(artistName)
-
-        verify { uiStateTester(expectedUiState) }
-    }
-
-    @Test
-    fun `getArtistInfo with existing artist should update UI state to artist information`() {
-        val artistName = "Madonna"
-        val artist = ArtistInformation.ArtistInformationData(
-            artistName = artistName,
-            url = "https://www.madonna.com/",
-            abstract = "Madonna is an American singer, songwriter, and actress.",
+        val card2 = Card.DataCard(
+            description = "Description 2",
+            infoUrl = "",
+            source = null,
+            sourceLogoUrl = "https://example.com/logo2.png",
             isLocallyStored = false
         )
-        val expectedUiState = MoreDetailsUIState(
-            artistName = artistName,
-            url = artist.url,
-            abstract = artist.abstract,
-            isLocallyStored = artist.isLocallyStored
+        val data = listOf(card1, card2)
+        val expectedUpdatedDataCards = listOf(
+            card1.copy(sourceLogoUrl = DEFAULT_IMAGE),
+            card2
         )
+        val expectedUpdatedUiState = presenter.uiState.copy(dataCards = expectedUpdatedDataCards)
 
-        val uiStateTester: (MoreDetailsUIState) -> Unit = mockk(relaxed =true)
-        moreDetailsPresenter.uiStateObservable.subscribe { uiStateTester(it) }
+        every { dataRepository.getDataByTerm(artistName) } returns data
+        every { formatterInfo.buildCardDescription(any(), any(), any()) } returns "Formatted Description"
 
-        every { artistInfoRepository.getArtistInfoByTerm(artistName) } returns artist
+        presenter.getDataArtist(artistName)
 
-        moreDetailsPresenter.getArtistInfo(artistName)
+        verify {
+            dataRepository.getDataByTerm(artistName)
+            presenter.uiStateObservable.notify(expectedUpdatedUiState)
+        }
 
-        verify { uiStateTester(expectedUiState) }
     }
 }
+
+
 
 
 

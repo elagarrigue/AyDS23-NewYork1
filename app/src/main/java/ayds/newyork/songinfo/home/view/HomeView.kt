@@ -38,7 +38,7 @@ class HomeViewActivity : AppCompatActivity(), HomeView {
     private val imageLoader: ImageLoader = UtilsInjector.imageLoader
 
     private lateinit var searchButton: Button
-    private lateinit var modeDetailsButton: Button
+    private lateinit var moreDetailsButton: Button
     private lateinit var openSongButton: Button
     private lateinit var termEditText: EditText
     private lateinit var descriptionTextView: TextView
@@ -71,10 +71,10 @@ class HomeViewActivity : AppCompatActivity(), HomeView {
     }
     private fun initProperties() {
         searchButton = findViewById(R.id.searchButton)
-        modeDetailsButton = findViewById(R.id.modeDetailsButton)
+        moreDetailsButton = findViewById(R.id.modeDetailsButton)
         openSongButton = findViewById(R.id.openSongButton)
         termEditText = findViewById(R.id.termEditText)
-        descriptionTextView = findViewById(R.id.descriptionTextView)
+        descriptionTextView = findViewById(R.id.description)
         posterImageView = findViewById(R.id.posterImageView)
     }
     private fun initListeners() {
@@ -82,7 +82,7 @@ class HomeViewActivity : AppCompatActivity(), HomeView {
             hideKeyboard(termEditText)
             searchAction()
         }
-        modeDetailsButton.setOnClickListener { notifyMoreDetailsAction() }
+        moreDetailsButton.setOnClickListener { notifyMoreDetailsAction() }
         openSongButton.setOnClickListener { notifyOpenSongAction() }
     }
     private fun searchAction() {
@@ -160,7 +160,7 @@ class HomeViewActivity : AppCompatActivity(), HomeView {
     }
     private fun enableActions(enable: Boolean) {
         runOnUiThread {
-            modeDetailsButton.isEnabled = enable
+            moreDetailsButton.isEnabled = enable
             openSongButton.isEnabled = enable
         }
     }

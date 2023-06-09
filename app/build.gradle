@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "ayds.apolo"
-        minSdkVersion 16
-        targetSdkVersion 31
+        minSdkVersion 24
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
 
@@ -41,14 +41,11 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.4.0'
     implementation 'com.android.support:support-annotations:28.0.0'
 
-    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'com.google.android.material:material:1.6.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
 
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
-    implementation 'com.google.code.gson:gson:2.8.9'
 
-    implementation 'androidx.sqlite:sqlite-ktx:2.2.0'
+    implementation 'androidx.sqlite:sqlite-ktx:2.3.1'
     implementation 'com.squareup.picasso:picasso:2.71828'
 
     testImplementation 'junit:junit:4.13.2'
@@ -56,4 +53,12 @@ dependencies {
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
+    implementation 'com.google.code.gson:gson:2.8.9'
+
+    implementation project(':nyt1_module')
+    implementation project(':lastfm-module')
+    implementation project(':wikipedia_module')
 }

@@ -1,3 +1,11 @@
 include ':app'
 include 'observer'
 rootProject.name = "AK New York"
+include ':nyt1_module'
+project(':nyt1_module').projectDir = new File('libs/NYT1-module')
+
+include ':lastfm-module'
+project(':lastfm-module').projectDir = new File('libs/LastFM-module')
+
+include ':wikipedia_module'
+project(':wikipedia_module').projectDir = new File('libs/Wikipedia-module')
